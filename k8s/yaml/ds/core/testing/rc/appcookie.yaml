@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-appcookie
+  name: deepshare2-appcookie
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-appcookie
+  template:
+    metadata:
+      labels:
+        app: deepshare2-appcookie
+        name: deepshare2-appcookie
+    spec:
+      nodeSelector:
+        deepshare2: "true"
+      containers:
+      - image: r.fds.so:5000/deepshare2:201603171308
+        name: deepshare2-appcookie
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepshare2d"]
+        args: ["-service-types","appcookiedevice","-genurl-base","https://r.fds.so","-http-listen","0.0.0.0:16759","-nsq-url","nsqd.db:4150","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level:"info"]
+        ports:
+        - containerPort: 16759
+          protocol: TCP

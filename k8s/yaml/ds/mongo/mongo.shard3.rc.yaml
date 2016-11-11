@@ -1,0 +1,228 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-shard3-30021
+  namespace: ds-db
+  labels:
+    name: mongo-shard3-30021
+spec:
+  ports:
+  - name: mongo-shard3-30021
+    port: 30021
+    protocol: TCP
+    targetPort: 30021
+  clusterIP: 10.100.30.21
+  selector:
+    app: mongo-shard3-30021
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-shard3-30022
+  namespace: ds-db
+  labels:
+    name: mongo-shard3-30022
+spec:
+  ports:
+  - name: mongo-shard3-30022
+    port: 30022
+    protocol: TCP
+    targetPort: 30022
+  clusterIP: 10.100.30.22
+  selector:
+    app: mongo-shard3-30022
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-shard3-30023
+  namespace: ds-db
+  labels:
+    name: mongo-shard3-30023
+spec:
+  ports:
+  - name: mongo-shard3-30023
+    port: 30023
+    protocol: TCP
+    targetPort: 30023
+  clusterIP: 10.100.30.23
+  selector:
+    app: mongo-shard3-30023
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-shard3-30021
+  namespace: ds-db
+  labels:
+    app: mongo-shard3-30021
+spec:
+  replicas: 1
+  selector:
+    app: mongo-shard3-30021
+  template:
+    metadata:
+      name: mongo-shard3-30021
+      labels:
+        app: mongo-shard3-30021
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        shard3: "30021"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-shard3-30021
+        command:
+        - mongod
+        - --storageEngine
+        - "wiredTiger"
+        - --wiredTigerCacheSizeGB
+        - "1"
+        - --port
+        - "30021"
+        - --dbpath=/data/mongo
+        - --directoryperdb
+        - --replSet
+        - "shard3"
+        - --shardsvr
+        - --oplogSize
+        - "1024"
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "1000m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+        ports:
+        - name: mongo-30021
+          containerPort: 30021
+          protocol: TCP
+          hostPort: 30021
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/30021
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-shard3-30022
+  namespace: ds-db
+  labels:
+    app: mongo-shard3-30022
+spec:
+  replicas: 1
+  selector:
+    app: mongo-shard3-30022
+  template:
+    metadata:
+      name: mongo-shard3-30022
+      labels:
+        app: mongo-shard3-30022
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        shard3: "30022"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-shard3-30022
+        command:
+        - mongod
+        - --storageEngine
+        - "wiredTiger"
+        - --wiredTigerCacheSizeGB
+        - "1"
+        - --port
+        - "30022"
+        - --dbpath=/data/mongo
+        - --directoryperdb
+        - --replSet
+        - "shard3"
+        - --shardsvr
+        - --oplogSize
+        - "1024"
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "1000m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+        ports:
+        - name: mongo-30022
+          containerPort: 30022
+          protocol: TCP
+          hostPort: 30022
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/30022
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-shard3-30023
+  namespace: ds-db
+  labels:
+    app: mongo-shard3-30023
+spec:
+  replicas: 1
+  selector:
+    app: mongo-shard3-30023
+  template:
+    metadata:
+      name: mongo-shard3-30023
+      labels:
+        app: mongo-shard3-30023
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        shard3: "30023"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-shard3-30023
+        command:
+        - mongod
+        - --storageEngine
+        - "wiredTiger"
+        - --wiredTigerCacheSizeGB
+        - "1"
+        - --port
+        - "30023"
+        - --dbpath=/data/mongo
+        - --directoryperdb
+        - --replSet
+        - "shard3"
+        - --shardsvr
+        - --oplogSize
+        - "1024"
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "1000m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+        ports:
+        - name: mongo-30023
+          containerPort: 30023
+          protocol: TCP
+          hostPort: 30023
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/30023

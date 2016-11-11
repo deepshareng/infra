@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: nsqadmin
+  name: nsqadmin
+  namespace: db
+spec:
+  ports:
+  - name: "nsqadmin-tcp"
+    port: 4170
+    protocol: TCP
+    targetPort: 4170
+  - name: "nsqadmin-http"
+    port: 4171
+    protocol: TCP
+    targetPort: 4171
+  clusterIP: 10.100.1.71
+  selector:
+    name: nsqadmin
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: nsqadmin
+  name: nsqadmin
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    name: nsqadmin
+  template:
+    metadata:
+      labels:
+        name: nsqadmin
+    spec:
+      nodeSelector:
+        env: DB
+      containers:
+      - image: node-00:30500/nsq:20151022
+        name: nsqadmin
+        command: ["/nsqadmin"]
+        args: ["--lookupd-http-address=nsqlookupd:4161"]
+        ports:
+        - containerPort: 4170
+          name: nsqadmin-tcp
+          protocol: TCP
+        - containerPort: 4171
+          name: nsqadmin-http
+          protocol: TCP

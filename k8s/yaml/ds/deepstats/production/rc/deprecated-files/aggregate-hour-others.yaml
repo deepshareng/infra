@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-aggregate-hour-others
+  name: deepstats-aggregate-hour-others
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-aggregate-hour-others
+  template:
+    metadata:
+      labels:
+        name: deepstats-aggregate-hour-others
+    spec:
+      nodeSelector:
+        env: ds-production
+        deepstats: "true"
+      containers:
+      - image: node-00:30500/deepstats:201604010957
+        name: deepstats-aggregate-hour-others
+        command: ["/go/bin/deepstatsd-aggregate"]
+        args: ["-nsqsel","nsqlookupd","-nsqlookupd-http-addr","10.100.104.70:4161","-mongo-addr","10.100.1.117:27017","-agg-service","hour","-channel","deepstats_aggregate_hour","-mongocoll","hour","-mongodb","deepstats","-topics","counter,dsaction,inappdata"]
+        ports:
+        - containerPort: 16759
+          name: aggregate-hour
+          protocol: TCP

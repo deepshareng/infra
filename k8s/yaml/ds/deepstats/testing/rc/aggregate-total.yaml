@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-aggregate-total
+  name: deepstats-aggregate-total
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-aggregate-total
+  template:
+    metadata:
+      labels:
+        name: deepstats-aggregate-total
+    spec:
+      nodeSelector:
+        deepshare2: "true"
+      containers:
+      - image: r.fds.so:5000/deepstats:201603311900
+        name: deepstats-aggregate-total
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepstatsd-aggregate"]
+        args: ["-nsqsel","nsqlookupd","-nsqlookupd-http-addr","nsqlookupd.db:4161","-mongo-addr","mongo-deepshare2.db:27017","-agg-service","total","-channel","deepstats_aggregate_total","-mongocoll","total","-mongodb","deepstats","-topics","counter,match,sharelink,dsaction,genurl,inappdata,retention"]
+        ports:
+        - containerPort: 16759
+          name: aggregate-total
+          protocol: TCP

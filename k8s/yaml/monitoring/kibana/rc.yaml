@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kibana-logging-v1
+  namespace: monitoring
+  labels:
+    k8s-app: kibana-logging
+    version: v1
+    kubernetes.io/cluster-service: "true"
+spec:
+  replicas: 1
+  selector:
+    k8s-app: kibana-logging
+    version: v1
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana-logging
+        version: v1
+        kubernetes.io/cluster-service: "true"
+    spec:
+      nodeSelector:
+        env: monitoring
+      containers:
+      - name: kibana-logging
+        image: r.fds.so:5000/kibana:20160328
+        resources:
+          # keep request = limit to keep this container in guaranteed class
+          limits:
+            cpu: 100m
+          requests:
+            cpu: 100m
+        env:
+          - name: "ELASTICSEARCH_URL"
+            value: "http://elasticsearch-logging.monitoring:9200"
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP

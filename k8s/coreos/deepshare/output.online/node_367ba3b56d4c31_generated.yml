@@ -1,0 +1,128 @@
+#cloud-config
+runcmd:
+  - sysctl vm.overcommit_memory=1
+  - ulimit -n 4096
+write-files:
+  - path: /opt/bin/wupiao
+    permissions: '0755'
+    content: "#!/bin/bash\n# [w]ait [u]ntil [p]ort [i]s [a]ctually [o]pen\n[ -n \"$1\" ] && [ -n \"$2\" ] && while ! curl --output /dev/null \\\n  --silent --head --fail --cacert /opt/bin/ca.pem --cert /opt/bin/worker.pem --key /opt/bin/worker-key.pem \\\n  https://${1}:${2}; do sleep 1 && echo -n .; done;\nexit $?\n"
+  - path: /etc/kubernetes/manifests/fluentd.manifest
+    permissions: '0755'
+    owner: root
+    content: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: fluentd-elasticsearch
+        namespace: kube-sys
+      spec:
+        containers:
+        - name: fluentd-elasticsearch
+          image: r.fds.so:5000/fluentd-elasticsearch:1.3
+          env:
+          - name: "FLUENTD_ARGS"
+            value: "-qq"
+          volumeMounts:
+          - name: varlog
+            mountPath: /varlog
+          - name: containers
+            mountPath: /var/lib/docker/containers
+        volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: containers
+          hostPath:
+            path: /var/lib/docker/containers
+coreos:
+  fleet:
+    metadata: role=node
+  units:
+    - name: update-engine.service
+      command: stop
+    - name: etcd2.service
+      command: start
+      drop-ins:
+        - name: 50-cluster-setting.conf
+          content: |
+            [Service]
+            Environment=ETCD_DISCOVERY_SRV=fds.so
+            Environment=ETCD_PROXY=on
+    - name: early-docker.service
+      command: start
+      drop-ins:
+        - name: 10-http-proxy.conf
+          content: >
+            [Service]
+
+            Environment='HTTP_PROXY=http://misingularity:misingularity@qd.trafficmanager.cn:8123'
+    - name: fleet.service
+      command: start
+    - name: flanneld.service
+      command: start
+      drop-ins:
+        - name: 50-network-config.conf
+          content: >
+            [Unit]
+
+            Requires=etcd2.service
+
+            [Service]
+
+            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config
+            '{"Network":"10.244.0.0/16", "Backend": {"Type": "vxlan"}}'
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: 50-registry.conf
+          content: >
+            [unit]
+
+            After=docker.socket early-docker.target network.target
+            flanneld.service
+
+            Requires=docker.socket early-docker.target flanneld.service
+
+            [Service]
+
+            Environment='DOCKER_OPTS=--insecure-registry node-00:30500
+            --insecure-registry node-01:30500 --insecure-registry r.fds.so:5000'
+    - name: setup-network-environment.service
+      command: start
+      content: >
+        [Unit]
+
+        Description=Setup Network Environment
+
+        Documentation=https://github.com/kelseyhightower/setup-network-environment
+
+        Requires=network-online.target
+
+        After=network-online.target
+
+
+
+        [Service]
+
+        ExecStartPre=-/usr/bin/mkdir -p /opt/bin
+
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/setup-network-environment -z
+        /opt/bin/setup-network-environment
+        https://softrepo.blob.core.chinacloudapi.cn/platform/setup-network-environment
+
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/setup-network-environment
+
+        ExecStart=/opt/bin/setup-network-environment
+
+        RemainAfterExit=yes
+
+        Type=oneshot
+    - name: kube-proxy.service
+      command: start
+      content: "[Unit]\nDescription=Kubernetes Proxy\nDocumentation=https://github.com/GoogleCloudPlatform/kubernetes\nRequires=setup-network-environment.service kube-kubelet.service\nAfter=setup-network-environment.service kube-kubelet.service\n[Service]\nExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-proxy -z /opt/bin/kube-proxy https://softrepo.blob.core.chinacloudapi.cn/k8s1-1-1/kube-proxy\nExecStartPre=/usr/bin/chmod +x /opt/bin/kube-proxy\n# wait for kubernetes master to be up and ready\nExecStartPre=/opt/bin/wupiao 172.18.0.4 6443\nExecStart=/opt/bin/kube-proxy \\\n--master=https://172.18.0.4:6443 \\\n--kubeconfig=/opt/bin/worker-kubeconfig.yaml \\\n--logtostderr=true\nRestart=always\nRestartSec=10\n"
+    - name: kube-kubelet.service
+      command: start
+      content: "[Unit]\nDescription=Kubernetes Kubelet\nDocumentation=https://github.com/GoogleCloudPlatform/kubernetes\nRequires=setup-network-environment.service\nAfter=setup-network-environment.service\n\n[Service]\nEnvironmentFile=/etc/network-environment\nExecStartPre=-/usr/bin/mkdir -p /opt/bin\nExecStartPre=/usr/bin/curl -L -o /opt/bin/ca.pem -z /opt/bin/ca.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/ca.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/worker-key.pem -z /opt/bin/worker-key.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/worker-key.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/worker.pem -z /opt/bin/worker.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/worker.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/worker-kubeconfig.yaml -z /opt/bin/worker-kubeconfig.yaml https://deepshare2.blob.core.chinacloudapi.cn/keys/worker-kubeconfig.yaml\nExecStartPre=/usr/bin/curl -L -o /opt/bin/kubelet -z /opt/bin/kubelet https://softrepo.blob.core.chinacloudapi.cn/k8s1-1-1/kubelet\nExecStartPre=/usr/bin/chmod +x /opt/bin/kubelet\n# wait for kubernetes master to be up and ready\nExecStartPre=/opt/bin/wupiao 172.18.0.4 6443\nExecStart=/opt/bin/kubelet \\\n--address=0.0.0.0 \\\n--port=10250 \\\n--api-servers=https://172.18.0.4:6443,https://172.18.0.5:6443,https://172.18.0.6:6443,https://172.18.0.7:6443,https://172.18.0.8:6443 \\\n--kubeconfig=/opt/bin/worker-kubeconfig.yaml \\\n--allow-privileged=true \\\n--logtostderr=true \\\n--cadvisor-port=4194 \\\n--healthz-bind-address=0.0.0.0 \\\n--config=/etc/kubernetes/manifests/ \\\n--pod-infra-container-image=r.fds.so:5000/pause:0.8.0 \\\n--cluster_dns=10.100.0.53 \\\n--cluster_domain=kube.local \\\n--healthz-port=10248\nRestart=always\nRestartSec=10\n"
+  update:
+    group: stable
+    reboot-strategy: 'off'

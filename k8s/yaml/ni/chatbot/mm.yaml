@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: mattermost
+  name: mattermost
+  namespace: ni-testing
+spec:
+  replicas: 1
+  selector:
+    name: mattermost
+  template:
+    metadata:
+      labels:
+        name: mattermost
+    spec:
+      nodeSelector:
+        env: ni-testing
+      containers:
+      - image: r.fds.so:5000/mattermost:3.0
+        name: mattermost
+        env:
+        - name: DB_HOST
+          value: "127.0.0.1"
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /mattermost/data
+          name: data
+        - mountPath: /mattermost/config/config.json
+          name: config
+      - image: r.fds.so:5000/mattermost-db:3.0
+        name: mattermost-db
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: content
+      volumes:
+      - name: content
+        hostPath:
+          path: /var/lib/docker/ni/testing/chatbot/mm/db
+      - name: data
+        hostPath:
+          path: /opt/data/ni/testing/chatbot/mm/data
+      - name: config
+        hostPath:
+          path: /opt/data/ni/testing/chatbot/mm/config/config.json

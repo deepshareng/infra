@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-retention-sum-7-days
+  name: deepstats-retention-sum-7-days
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-retention-sum-7-days
+  template:
+    metadata:
+      labels:
+        name: deepstats-retention-sum-7-days
+    spec:
+      nodeSelector:
+        env: ds-production
+        zone: deepshare
+      containers:
+      - image: r.fds.so:5000/deepstats:201607010733
+        name: deepstats-retention-sum-7-days
+        command: ["/go/bin/deepstatsd-retention-sum"]
+        args:
+        - -service-name
+        - 7-day-retention
+        - -mongo-addr
+        - 10.100.30.61:30061,10.100.30.62:30062,10.100.30.63:30063
+        - -deepstats-url
+        - 10.100.1.14:10002
+        - -nsq-url
+        - 10.100.89.71:4150
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "2000m"
+          limits:
+            memory: "2048Mi"
+            cpu: "2000m"

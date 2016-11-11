@@ -1,0 +1,106 @@
+Host *
+	Hostname k8s1-1-1-7e4cfa547fc78d.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/k8s1-1-1_7e4cfa547fc78d_ssh.key
+
+
+Host master-00
+	Port 2201
+
+Host master-01
+	Port 2202
+
+Host master-02
+	Port 2203
+
+Host master-03
+	Port 2204
+
+Host master-04
+	Port 2205
+
+Host node-00
+	Port 2206
+
+Host node-01
+	Port 2207
+
+Host node-02
+	Port 2208
+
+Host node-03
+	Port 2209
+
+Host node-04
+	Port 2210
+
+Host node-05
+	Port 2211
+
+Host node-06
+	Port 2212
+
+Host node-07
+	Port 2213
+
+Host node-08
+	Port 2214
+
+Host node-09
+	Port 2215
+
+Host node-10
+	Port 2216
+
+Host node-11
+	Port 2217
+
+Host node-12
+	Port 2218
+
+Host node-14
+	Port 2219
+
+Host node-15
+	Port 2220
+
+Host node-16
+	Port 2221
+
+Host node-17
+	Port 2222
+
+Host node-18
+	Port 2223
+
+Host node-19
+	Port 2224
+
+Host node-20
+	Port 2225
+
+Host node-21
+	Port 2226
+
+Host node-22
+	Port 2227
+
+Host node-23
+	Port 2228
+
+Host node-24
+	Port 2229
+
+Host node-25
+	Port 2230
+
+Host node-26
+	Port 2231
+
+Host node-27
+	Port 2232

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard-tools
+  name: redis-shard-tools
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard-tools
+  template:
+    metadata:
+      labels:
+        app: redis-shard-tools
+      name: redis-shard-tools
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard-tools: "true"
+      containers:
+      - name: redis-shard-tools
+        image: r.fds.so:5000/redis:trib2
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/tools

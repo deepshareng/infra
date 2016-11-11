@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: prometheus-blackbox
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    name: prometheus-blackbox-exporter
+  template:
+    metadata:
+      labels:
+        name: prometheus-blackbox-exporter
+    spec:
+      nodeSelector:
+        env: monitoring
+      containers:
+      - image: r.fds.so:5000/blackbox-exporter
+        name: blackbox-exporter
+        command:
+          - "/go/src/blackbox_exporter"
+        args: ["-config.file","/config/blackbox.yaml","-log.level","debug"]
+        ports:
+        - containerPort: 9115
+          hostPort: 9115
+          protocol: TCP
+        volumeMounts:
+          - mountPath: /config
+            name: blackbox-exporter
+      volumes:
+        - name: blackbox-exporter
+          hostPath:
+            path: /opt/data/blackbox-exporter
+
+
+

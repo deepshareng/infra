@@ -1,0 +1,146 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redis-7000
+  name: redis-7000
+  namespace: ds-production
+spec:
+  replicas: 3
+  selector:
+    name: redis-7000
+  template:
+    metadata:
+      labels:
+        redis: deepshare2
+        name: redis-7000
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        env: ds-production
+        redis: "true"
+        zone: deepshare
+      containers:
+      - name: redis-7000
+        image: r.fds.so:5000/redis:3.0.6
+        command:
+        - redis-server
+        - --port 7000
+        - --cluster-enabled yes
+        - --cluster-config-file nodes.conf
+        - --cluster-node-timeout 5000
+        - --appendonly yes
+        #- --dbfilename dump.rdb
+        #- --dir /data
+        ports:
+        - containerPort: 7000
+          hostPort: 7000
+        - containerPort: 17000
+          hostPort: 17000
+        resources:
+          limits:
+            cpu: "0.3"
+        volumeMounts:
+        - mountPath: /data
+          name: data-7000
+      volumes:
+      - name: data-7000
+        hostPath:
+          path: /var/lib/docker/redis-data-7000
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redis-7001
+  name: redis-7001
+  namespace: ds-production
+spec:
+  replicas: 3
+  selector:
+    name: redis-7001
+  template:
+    metadata:
+      labels:
+        redis: deepshare2
+        name: redis-7001
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        env: ds-production
+        redis: "true"
+        zone: deepshare
+      containers:
+      - name: redis-7001
+        image: r.fds.so:5000/redis:3.0.6
+        command:
+        - redis-server
+        - --port 7001
+        - --cluster-enabled yes
+        - --cluster-config-file nodes.conf
+        - --cluster-node-timeout 5000
+        - --appendonly yes
+        ports:
+        - containerPort: 7001
+          hostPort: 7001
+        - containerPort: 17001
+          hostPort: 17001
+        resources:
+          limits:
+            cpu: "0.3"
+        volumeMounts:
+        - mountPath: /data
+          name: data-7001
+      volumes:
+      - name: data-7001
+        hostPath:
+          path: /var/lib/docker/redis-data-7001
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redis-7002
+  name: redis-7002
+  namespace: ds-production
+spec:
+  replicas: 3
+  selector:
+    name: redis-7002
+  template:
+    metadata:
+      labels:
+        redis: deepshare2
+        name: redis-7002
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        env: ds-production
+        redis: "true"
+        zone: deepshare
+      containers:
+      - name: redis-7002
+        image: r.fds.so:5000/redis:3.0.6
+        command:
+        - redis-server
+        - --port 7002
+        - --cluster-enabled yes
+        - --cluster-config-file nodes.conf
+        - --cluster-node-timeout 5000
+        - --appendonly yes
+        ports:
+        - containerPort: 7002
+          hostPort: 7002
+        - containerPort: 17002
+          hostPort: 17002
+        resources:
+          limits:
+            cpu: "0.3"
+        volumeMounts:
+        - mountPath: /data
+          name: data-7002
+      volumes:
+      - name: data-7002
+        hostPath:
+          path: /var/lib/docker/redis-data-7002

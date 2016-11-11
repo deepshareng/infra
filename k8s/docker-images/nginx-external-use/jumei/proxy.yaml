@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare-proxy-jumei
+  namespace: ds-jumei
+spec:
+  replicas: 2
+  selector:
+    name: deepshare-proxy-jumei
+  template:
+    metadata:
+      labels:
+        name: deepshare-proxy-jumei
+    spec:
+      nodeSelector:
+        env: ds-jumei
+      containers:
+      - image: r.fds.so:5000/jumei-nginx:2016071201
+        name: deepshare-proxy
+        ports:
+        - containerPort: 443
+          hostPort: 10443
+          protocol: TCP
+        - containerPort: 80
+          hostPort: 10080
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /apple-app-site
+          name: apple-app-site
+      volumes:
+      - name: apple-app-site
+        hostPath:
+          path: /opt/data/ds/apple-app-site

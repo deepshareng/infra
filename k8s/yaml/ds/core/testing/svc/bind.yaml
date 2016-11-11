@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-bind
+  name: deepshare2-bind
+  namespace: production
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.28
+  selector:
+    app: deepshare2-bind

@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-retention-3-days
+  name: deepstats-retention-3-days
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-retention-3-days
+  template:
+    metadata:
+      labels:
+        name: deepstats-retention-3-days
+    spec:
+      nodeSelector:
+        env: ds-production
+        zone: deepshare
+      containers:
+      - image: r.fds.so:5000/deepstats-retention-days:201607041012
+        name: deepstats-retention-3-days
+        command: ["/go/bin/deepstatsd-retention"]
+        args:
+        - -channel
+        - 3-day-retention
+        - -retention-day
+        - "3"
+        - -retention-service-name
+        - 3-day-retention
+        - -nsq-url
+        - nsqd.ds-production:4150
+        - -nsqlookupd-http-addr
+        - 10.100.104.70:4161
+        - -redis-addr
+        - 10.100.1.79:6379
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "2000m"
+          limits:
+            memory: "2048Mi"
+            cpu: "2000m"

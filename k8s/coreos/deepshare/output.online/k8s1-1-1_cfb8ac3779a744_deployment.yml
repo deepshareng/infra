@@ -1,0 +1,244 @@
+name: k8s1-1-1
+nodes:
+  master: 5
+  node: 72
+weave_salt: f4b358221a45760a68b17e357f2a52562855e368d4112f55240aa49685f9baba
+resources:
+  vnet: vnet-multi-master-kubernetes
+  service: k8s1-1-1-7e4cfa547fc78d
+  ssh_key:
+    key: ./output/k8s1-1-1_7e4cfa547fc78d_ssh.key
+    pem: ./output/k8s1-1-1_7e4cfa547fc78d_ssh.pem
+  storage_account: deepshare2
+hosts:
+  - name: master-00
+    port: 2201
+    cloud_config_file: ./output/master_7e4cfa547fc78d_generated.yml
+  - name: master-01
+    port: 2202
+    cloud_config_file: ./output/master_7e4cfa547fc78d_generated.yml
+  - name: master-02
+    port: 2203
+    cloud_config_file: ./output/master_7e4cfa547fc78d_generated.yml
+  - name: master-03
+    port: 2204
+    cloud_config_file: ./output/master_7e4cfa547fc78d_generated.yml
+  - name: master-04
+    port: 2205
+    cloud_config_file: ./output/master_7e4cfa547fc78d_generated.yml
+  - name: node-00
+    port: 2206
+    cloud_config_file: ./output/node_09e32096d3ffe9_generated.yml
+  - name: node-01
+    port: 2207
+    cloud_config_file: ./output/node_09e32096d3ffe9_generated.yml
+  - name: node-02
+    port: 2208
+    cloud_config_file: ./output/node_09e32096d3ffe9_generated.yml
+  - name: node-03
+    port: 2209
+    cloud_config_file: ./output/node_09e32096d3ffe9_generated.yml
+  - name: node-04
+    port: 2210
+    cloud_config_file: ./output/node_09e32096d3ffe9_generated.yml
+  - name: node-05
+    port: 2211
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-06
+    port: 2212
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-07
+    port: 2213
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-08
+    port: 2214
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-09
+    port: 2215
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-10
+    port: 2216
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-11
+    port: 2217
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-12
+    port: 2218
+    cloud_config_file: ./output/node_3f28202118d6fd_generated.yml
+  - name: node-14
+    port: 2219
+    cloud_config_file: ./output/node_8bdc0138beb1f1_generated.yml
+  - name: node-15
+    port: 2220
+    cloud_config_file: ./output/node_8bdc0138beb1f1_generated.yml
+  - name: node-16
+    port: 2221
+    cloud_config_file: ./output/node_d986ceb3fbfe35_generated.yml
+  - name: node-17
+    port: 2222
+    cloud_config_file: ./output/node_d986ceb3fbfe35_generated.yml
+  - name: node-18
+    port: 2223
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-19
+    port: 2224
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-20
+    port: 2225
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-21
+    port: 2226
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-22
+    port: 2227
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-23
+    port: 2228
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-24
+    port: 2229
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-25
+    port: 2230
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-26
+    port: 2231
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-27
+    port: 2232
+    cloud_config_file: ./output/node_406a96be732621_generated.yml
+  - name: node-28
+    port: 2233
+    cloud_config_file: ./output/node_c2ac900d766c24_generated.yml
+  - name: node-29
+    port: 2234
+    cloud_config_file: ./output/node_c2ac900d766c24_generated.yml
+  - name: node-30
+    port: 2235
+    cloud_config_file: ./output/node_c2ac900d766c24_generated.yml
+  - name: node-31
+    port: 2236
+    cloud_config_file: ./output/node_c2ac900d766c24_generated.yml
+  - name: node-32
+    port: 2237
+    cloud_config_file: ./output/node_0fa626037d413d_generated.yml
+  - name: node-33
+    port: 2238
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-34
+    port: 2239
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-35
+    port: 2240
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-36
+    port: 2241
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-37
+    port: 2242
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-38
+    port: 2243
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-39
+    port: 2244
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-40
+    port: 2245
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-41
+    port: 2246
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-42
+    port: 2247
+    cloud_config_file: ./output/node_f433a496d32be6_generated.yml
+  - name: node-43
+    port: 2248
+    cloud_config_file: ./output/node_63e7ea3b5c1c99_generated.yml
+  - name: node-44
+    port: 2249
+    cloud_config_file: ./output/node_63e7ea3b5c1c99_generated.yml
+  - name: node-45
+    port: 2250
+    cloud_config_file: ./output/node_63e7ea3b5c1c99_generated.yml
+  - name: node-46
+    port: 2251
+    cloud_config_file: ./output/node_63e7ea3b5c1c99_generated.yml
+  - name: node-47
+    port: 2252
+    cloud_config_file: ./output/node_e79148425edd8a_generated.yml
+  - name: node-48
+    port: 2253
+    cloud_config_file: ./output/node_6bb0f5b2ed7c2b_generated.yml
+  - name: node-49
+    port: 2254
+    cloud_config_file: ./output/node_6bb0f5b2ed7c2b_generated.yml
+  - name: node-50
+    port: 2255
+    cloud_config_file: ./output/node_4c85211ae838ae_generated.yml
+  - name: node-51
+    port: 2256
+    cloud_config_file: ./output/node_4c85211ae838ae_generated.yml
+  - name: node-52
+    port: 2257
+    cloud_config_file: ./output/node_4c85211ae838ae_generated.yml
+  - name: node-53
+    port: 2258
+    cloud_config_file: ./output/node_49894a7eb071bd_generated.yml
+  - name: node-54
+    port: 2259
+    cloud_config_file: ./output/node_49894a7eb071bd_generated.yml
+  - name: node-55
+    port: 2260
+    cloud_config_file: ./output/node_49894a7eb071bd_generated.yml
+  - name: node-56
+    port: 2261
+    cloud_config_file: ./output/node_49894a7eb071bd_generated.yml
+  - name: node-57
+    port: 2262
+    cloud_config_file: ./output/node_49894a7eb071bd_generated.yml
+  - name: node-58
+    port: 2263
+    cloud_config_file: ./output/node_49894a7eb071bd_generated.yml
+  - name: node-59
+    port: 2264
+    cloud_config_file: ./output/node_48c7c0757207a7_generated.yml
+  - name: node-60
+    port: 2265
+    cloud_config_file: ./output/node_48c7c0757207a7_generated.yml
+  - name: node-61
+    port: 2266
+    cloud_config_file: ./output/node_48c7c0757207a7_generated.yml
+  - name: node-62
+    port: 2267
+    cloud_config_file: ./output/node_48c7c0757207a7_generated.yml
+  - name: node-63
+    port: 2268
+    cloud_config_file: ./output/node_48c7c0757207a7_generated.yml
+  - name: node-64
+    port: 2269
+    cloud_config_file: ./output/node_48c7c0757207a7_generated.yml
+  - name: node-65
+    port: 2270
+    cloud_config_file: ./output/node_48c7c0757207a7_generated.yml
+  - name: node-66
+    port: 2271
+    cloud_config_file: ./output/node_47a4b0bd56c2a4_generated.yml
+  - name: node-67
+    port: 2272
+    cloud_config_file: ./output/node_47a4b0bd56c2a4_generated.yml
+  - name: node-68
+    port: 2273
+    cloud_config_file: ./output/node_c0ebed451ab0a1_generated.yml
+  - name: node-69
+    port: 2274
+    cloud_config_file: ./output/node_c0ebed451ab0a1_generated.yml
+  - name: node-70
+    port: 2275
+    cloud_config_file: ./output/node_cfb8ac3779a744_generated.yml
+  - name: node-71
+    port: 2276
+    cloud_config_file: ./output/node_cfb8ac3779a744_generated.yml
+resizing: true
+old_size: 70
+old_state_file: ./output/k8s1-1-1_c0ebed451ab0a1_deployment.yml

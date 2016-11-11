@@ -1,0 +1,24 @@
+#!/bin/bash
+
+TIME=$(date +%M%H%d%m%y)
+
+DEEPDASH_DIR=/data/mongo-dashboard/deepdash
+DEEPDASH_BACKUP_DIR=dashboard_deepdash_${TIME}
+DEEPDASH_BACKUP_TAR=dashboard_deepdash_${TIME}.tar.gz
+
+# mongodb backup for db dashboard-deepdash
+[ ! -d "$DEEPDASH_DIR" ] && mkdir -p $DEEPDASH_DIR
+
+cd $DEEPDASH_DIR
+
+# data backup
+mongodump -h 10.100.1.117 -d deepdash -o $DEEPDASH_BACKUP_DIR
+
+# tar dir
+tar czf $DEEPDASH_BACKUP_TAR $DEEPDASH_BACKUP_DIR
+
+# upload deepdash tar to azure storage
+blobxfer prodbackup production-mongo-backup $DEEPDASH_BACKUP_TAR --upload --pageblob --managementep core.chinacloudapi.cn --endpoint core.chinacloudapi.cn --storageaccountkey PE0fJ1Vpa/IHasMjhpndbL9+2oSJpo/GwgTPw34zTS9/1CyOfUbxbkAi71x942BbK+1VPjbsb3Pp4XSnNgOL0w==
+
+# delete 
+rm -rf $DEEPDASH_BACKUP_TAR $DEEPDASH_BACKUP_DIR

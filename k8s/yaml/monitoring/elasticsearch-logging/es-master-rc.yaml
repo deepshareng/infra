@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: es-master
+  labels:
+    component: elasticsearch-logging
+    role: master
+  namespace: monitoring
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: elasticsearch-logging
+        role: master
+    spec:
+      nodeSelector:
+        env: monitoring
+        elasticsearch: "true"
+        es-master: "true"
+      serviceAccount: elasticsearch-logging
+      containers:
+      - name: es-master
+        securityContext:
+          capabilities:
+            add:
+              - IPC_LOCK
+        image: r.fds.so:5000/docker-elasticsearch-kubernetes:1.7.1-4
+        env:
+        - name: KUBERNETES_CA_CERTIFICATE_FILE
+          value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: KUBERNETES_SERVICE_HOST
+          value: 172.18.0.5
+        - name: KUBERNETES_SERVICE_PORT
+          value: "8080"
+        - name: "CLUSTER_NAME"
+          value: "esdb-logging"
+        - name: NODE_MASTER
+          value: "true"
+        - name: NODE_DATA
+          value: "false"
+        - name: HTTP_ENABLE
+          value: "false"
+        ports:
+        - containerPort: 9300
+          hostPort: 19400
+          name: transport
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /data
+          name: storage
+      volumes:
+      - name: storage
+        hostPath:
+          path: /mnt/data/elasticsearch-logging

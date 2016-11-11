@@ -1,0 +1,54 @@
+Host deepshare-test-m1*
+	Hostname deepshare-test-m1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/deepshare-test1.2_ssh.key
+
+
+Host deepshare-test-z1*
+	Hostname deepshare-test-z1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/deepshare-test1.2_ssh.key
+
+
+Host deepshare-test-m1-master-00
+	Port 2201
+
+Host deepshare-test-m1-master-01
+	Port 2202
+
+Host deepshare-test-m1-master-02
+	Port 2203
+
+Host deepshare-test-z1-node-00
+	Port 2201
+
+Host deepshare-test-z1-node-01
+	Port 2202
+
+Host deepshare-test-z1-node-02
+	Port 2203
+
+Host deepshare-test-z1-node-03
+	Port 2204
+
+Host deepshare-test-z1-node-04
+	Port 2205
+
+Host deepshare-test-z1-node-05
+	Port 2206
+
+Host deepshare-test-z1-node-06
+	Port 2207
+
+Host deepshare-test-z1-node-07
+	Port 2208

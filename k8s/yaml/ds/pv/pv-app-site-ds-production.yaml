@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: apple-app-site-ds-production
+  labels:
+    name: apple-app-site-ds-production
+spec:
+  capacity:
+    storage: 50Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/apple-app-site"
+    server: 10.100.0.98
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: apple-app-site
+  namespace: ds-production
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Mi

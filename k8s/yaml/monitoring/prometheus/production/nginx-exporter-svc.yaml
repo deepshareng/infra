@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: 'true'
+  namespace: monitoring
+  labels:
+    app: nginx-exporter
+    name: nginx-exporter
+  name: nginx-exporter
+spec:
+  clusterIP: 10.100.48.96
+  ports:
+  - name: scrape
+    port: 9113
+    protocol: TCP
+  selector:
+    app: nginx-exporter
+  type: ClusterIP

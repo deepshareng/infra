@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: nsqadmin
+  name: nsqadmin
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: nsqadmin
+  template:
+    metadata:
+      labels:
+        name: nsqadmin
+        app: nsqadmin
+    spec:
+      nodeSelector:
+        env: ds-production
+        # nsq: "true"
+        zone: deepshare
+      containers:
+      - image: r.fds.so:5000/nsq:20151022
+        name: nsqadmin
+        command: ["/nsqadmin"]
+        args: ["--lookupd-http-address=172.16.0.12:4161,172.16.0.13:4161"]
+        ports:
+        - containerPort: 4170
+          name: nsqadmin-tcp
+          protocol: TCP
+        - containerPort: 4171
+          name: nsqadmin-http
+          protocol: TCP

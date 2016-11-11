@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare-nodejs
+  name: deepshare-nodejs
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepshare-nodejs
+  template:
+    metadata:
+      labels:
+        name: deepshare-nodejs
+        app: deepshare-nodejs
+    spec:
+      nodeSelector:
+        env: ds-staging
+      containers:
+      - image: r.fds.so:5000/node-js:4.3.2
+        name: deepshare-nodejs

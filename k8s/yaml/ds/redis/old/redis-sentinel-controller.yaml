@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: redis-sentinel
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    redis-sentinel: "true"
+  template:
+    metadata:
+      labels:
+        name: redis-sentinel
+        redis-sentinel: "true"
+        role: sentinel
+    spec:
+      nodeSelector:
+        env: DB
+      containers:
+      - name: sentinel
+        image: node-00:30500/redis:cluster-v1
+        env:
+          - name: SENTINEL
+            value: "true"
+        ports:
+          - containerPort: 26379

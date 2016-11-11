@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-reintroduce
+  name: deepstats-reintroduce
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-reintroduce
+  template:
+    metadata:
+      labels:
+        name: deepstats-reintroduce
+    spec:
+      nodeSelector:
+        env: ds-staging
+      containers:
+      - image: r.fds.so:5000/deepstats-reintroduce-staging:201604081416
+        name: deepstats-reintroduce
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepstatsd-reintroduce"]
+        # "backup collection" mongo-deepshare2.db, "dashboard collection" mongo.ds-production
+        args: ["-extract-mongo-addr","mongo-deepshare2.db:27017","-process-mongo-addr","mongo.ds-production:27017"]

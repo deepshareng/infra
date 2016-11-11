@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare-io-proxy
+  name: deepshare-io-proxy
+  namespace: ds-production
+spec:
+  ports:
+  - name: "https"
+    port: 443
+    protocol: TCP
+    targetPort: 443
+    nodePort: 32101
+  - name: "http"
+    port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 32102
+  type: NodePort
+  selector:
+    name: deepshare-io-proxy

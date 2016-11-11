@@ -1,0 +1,83 @@
+Host qdk-m1*
+	Hostname qdk-m1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-d1*
+	Hostname qdk-d1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z1*
+	Hostname qdk-z1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z2*
+	Hostname qdk-z2.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z3*
+	Hostname qdk-z3.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z4*
+	Hostname qdk-z4.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-m1-master-00
+	Port 2201
+
+Host qdk-m1-master-01
+	Port 2202
+
+Host qdk-m1-master-02
+	Port 2203
+
+Host qdk-m1-master-03
+	Port 2204
+
+Host qdk-z1-node-00
+	Port 2201
+
+Host qdk-z1-node-01
+	Port 2202

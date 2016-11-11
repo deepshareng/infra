@@ -1,0 +1,180 @@
+#spark 部署文档
+
+
+测试环境 
+ 
+一，基本环境配置  
+3台a4机器： 4核28g内存  
+系统： Ubuntu 14.04.4 LTS Trusty  
+
+
+二，依赖包安装和初始化配置  
+2.1根据以下文档配置系统，并保证所有系统间可以无密码登录 
+https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-14-04
+
+注：当前使用的用户名为: mesos  
+
+2.2系统参数和环境变量配置  
+sudo add-apt-repository ppa:openjdk-r/ppa
+sudo apt-get update 
+
+sudo apt-get install -y curl wget unzip gradle  default-jre gcc g++ scala openjdk-8-jdk
+
+＃ 设定默认的java为1.8  
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+
+＃验证当前默认java版本  
+java -version
+openjdk version "1.8.0_91"
+OpenJDK Runtime Environment (build 1.8.0_91-8u91-b14-0ubuntu4~14.04-b14)
+OpenJDK 64-Bit Server VM (build 25.91-b14, mixed mode)
+
+
+＃添加系统自加载的环境变量
+
+/etc/rc.local
+
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+
+
+三，mesos安装和测试  
+根据以下文章在用户mesos下安装
+
+＃install mesos  
+https://www.digitalocean.com/community/tutorials/how-to-configure-a-production-ready-mesosphere-cluster-on-ubuntu-14-04  
+
+＃安装必要的key  
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF
+DISTRO=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
+CODENAME=$(lsb_release -cs)
+echo "deb http://repos.mesosphere.io/${DISTRO} ${CODENAME} main" | sudo tee /etc/apt/sources.list.d/mesosphere.list
+
+
+＃安装应用  
+apt-get install -y mesos marathon zookeeper snappy  libsnappy-dev  
+
+＃注： 三台机器上仅在master节点上安装marathon,其他两台slave节点不需要安装。
+其中zookeeper的myid配置依次为1,2,3(对应三台机器，不能重复配置
+
+＃multi-master mesos conf  
+https://www.digitalocean.com/community/tutorials/how-to-configure-a-production-ready-mesosphere-cluster-on-ubuntu-14-04
+
+https://gist.github.com/crosbymichael/f86b62fb04ae32d2abc9
+
+＃zookeeper 配置文件位置
+/etc/zookeeper/conf/zoo.cfg
+
+＃zookeeper默认的配置参数添加样例  
+server.1=172.30.2.4:2888:3888  
+server.2=172.30.2.5:2888:3888   
+server.3=172.30.2.6:2888:3888  
+
+＃所有的 mesos日志都位于/var/log/mesos目录下  
+＃ mesos默认web访问端口5050
+
+
+＃install docker on ubuntu  
+https://docs.docker.com/engine/installation/linux/ubuntulinux/
+https://open.mesosphere.com/getting-started/install/
+
+
+四，hdfs安装和测试  
+＃hadoop默认版本  
+hadoop-2.6.4  
+mkdir /mnt/www  
+
+cd /mnt/www/;下载hadoop-2.6.4 并解压缩  并在hadoop目录下创建对应的logs目录
+
+chown -R mesos:mesos /mnt/www  
+
+＃创建对应的hdfs目录  
+mkdir /mnt/hdfs  
+chown -R mesos:mesos /mnt/hdfs  
+sudo su - mesos  
+＃并根据以下来针对/mnt/hdfs下创建的目录来赋权限和用户    
+$ ls -la /mnt/hdfs/  
+drwxr-xr-x 7 mesos mesos 4096 Jul 25 10:51 .  
+drwxr-xr-x 7 root  root  4096 Jul 25 09:44 ..  
+drwx------ 3 mesos mesos 4096 Jul 28 01:57 datanode  
+drwxrwxr-x 3 mesos mesos 4096 Jul 25 10:51 journal  
+drwxrwxr-x 2 mesos mesos 4096 Jul 25 10:51 namenode  
+drwxr-xr-x 2 mesos root  4096 Jul 28 01:57 run  
+drwxrwxr-x 2 mesos mesos 4096 Jul 25 10:51 tmp  
+
+＃更改／etc/hosts并添加机器和对应ip地址  
+请参考infra/doc下的对应文档  
+
+＃将修改好的配置文件拷贝到对应的hadoop conf目录下  
+core-site.xml,hdfs-site.xml两个文件（请参考infra/doc下的配置修改）
+
+＃切换用户到mesos  
+sudo su - mesos  
+
+＃添加启动时期激活的系统参数  (三台机器都必须添加)
+vi ~/.bashrc  
+
+＃内容  
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64  
+export HADOOP_INSTALL=/hadoop  
+export PATH=$PATH:$HADOOP_INSTALL/bin  
+export PATH=$PATH:$HADOOP_INSTALL/sbin  
+export HADOOP_COMMON_HOME=$HADOOP_INSTALL  
+export HADOOP_HDFS_HOME=$HADOOP_INSTALL  
+export JAVA_LIBRARY_PATH=$HADOOP_INSTALL/lib/native  
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_INSTALL/lib"  
+
+
+
+
+＃开始配置hdfs  
+
+sudo su - mesos  
+source ~/.bashrc  
+＃首先格式化zookeeper中对应的信息  
+hdfs zkfc -formatZK  
+＃开始格式化hdfs  
+hdfs journalnode  （三台机器上都执行）  
+hdfs namenode -format  （仅在namenode的机器上执行）  
+
+＃启动所有的服务  
+在namenode 的两台机器上执行  
+hdfs namenode &  
+hdfs zkfc  &  
+在三台机器上执行  
+hdfs datanode & 
+
+
+
+＃通过jps来查看对应的服务  
+jps
+11562 Jps  
+11031 NameNode  
+11494 DFSZKFailoverController  
+11324 JournalNode  
+11136 DataNode  
+
+＃访问网站  
+  ipaddr:50070会看到该节点已经成为active
+
+＃导入数据到hdfs中   
+hdfs -copyFromLocal /mnt/mongodata/deepshare.json /test  
+hdfs dfs -fs hdfs://172.30.2.4:50071 -ls /test 
+
+＃注：所有的日志都位于/mnt/www/hadoop/logs中  
+
+五，spark安装和测试   
+
+＃spark执行文件  
+http://d3kbcqa49mib13.cloudfront.net/spark-1.6.2-bin-hadoop2.6.tgz  
+＃创建对应的目录  
+mkdir /mnt/spark  
+chown -R mesos:mesos /mnt/spark
+
+
+下载执行文件到/mnt/spark下并解压    
+/mnt/spark/spark-1.6.2-bin-hadoop2.6  
+修改conf下的spark-env.sh和spark-defaults.conf(参考infra/doc下的spark配置文件)
+

@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: es-master
+  labels:
+    component: elasticsearch
+    role: master
+  namespace: ni-testing
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: elasticsearch
+        role: master
+    spec:
+      nodeSelector:
+        env: ni-testing
+        elasticsearch: "true"
+      serviceAccount: elasticsearch
+      containers:
+      - name: es-master
+        securityContext:
+          capabilities:
+            add:
+              - IPC_LOCK
+        image: r.fds.so:5000/docker-elasticsearch-kubernetes:2.3.1
+        env:
+        - name: KUBERNETES_CA_CERTIFICATE_FILE
+          value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: "CLUSTER_NAME"
+          value: "esdb-ni-testing"
+        - name: NODE_MASTER
+          value: "true"
+        - name: NODE_DATA
+          value: "false"
+        - name: HTTP_ENABLE
+          value: "false"
+        ports:
+        - containerPort: 9300
+          hostPort: 19400
+          name: transport
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /data
+          name: storage
+      volumes:
+      - name: storage
+        hostPath:
+          path: /mnt/resource/elasticsearch

@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redis-dsusage
+  name: redis-dsusage
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: redis-dsusage
+  template:
+    metadata:
+      labels:
+        name: redis-dsusage
+    spec:
+      nodeSelector:
+        env: ds-production
+        zone: deepshare
+      containers:
+      - image: r.fds.so:5000/redis
+        name: redis-dsusage
+        command:
+        - /redis-stable/src/redis-server
+        - /redis-conf/redis.conf
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /redis-conf
+          name: redis-conf
+        - mountPath: /redis-master-data
+          name: redis-data
+      volumes:
+      - name: redis-conf
+        hostPath:
+          path: /opt/data/ds/redis-dsusage/conf
+      - name: redis-data
+        hostPath:
+          path: /opt/data/ds/redis-dsusage/data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-dsusage
+  name: redis-dsusage
+  namespace: ds-production
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  clusterIP: 10.100.1.79
+  selector:
+    name: redis-dsusage

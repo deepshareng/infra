@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  generation: 1
+  labels:
+    name: qd-registry2-2-1
+  name: qd-registry2-2-1
+  namespace: kube-sys
+spec:
+  replicas: 2
+  selector:
+    name: qd-registry2-2-1
+  template:
+    metadata:
+      labels:
+        name: qd-registry2-2-1
+    spec:
+      nodeSelector:
+        env: kube-sys
+        zone: system
+      containers:
+      - image: r.fds.so:5000/qd-registry:20160106
+        name: qd-registry2-2-1
+        ports:
+        - containerPort: 5000
+          protocol: TCP

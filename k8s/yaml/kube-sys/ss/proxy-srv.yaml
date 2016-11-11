@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: ss
+  name: ss
+  namespace: kube-sys
+spec:
+  ports:
+  - name: ""
+    port: 8123
+    protocol: TCP
+    targetPort: 8123
+    nodePort: 30123
+  type: NodePort
+  selector:
+    name: ss

@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redis-dsusage-6380
+  name: redis-dsusage-6380
+  namespace: ds-production
+spec:
+  replicas: 3
+  selector:
+    name: redis-dsusage-6380
+  template:
+    metadata:
+      labels:
+        redis: deepshare2-dsusage
+        name: redis-dsusage-6380
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        env: ds-production
+        redis-dsusage: "true"
+      containers:
+      - name: redis-dsusage-6380
+        image: r.fds.so:5000/redis:3.0.6
+        command:
+        - redis-server
+        - --port 7000
+        - --cluster-enabled yes
+        - --cluster-config-file nodes.conf
+        - --cluster-node-timeout 5000
+        - --appendonly yes
+        #- --dbfilename dump.rdb
+        #- --dir /data
+        ports:
+        - containerPort: 7000
+          hostPort: 7000
+        - containerPort: 17000
+          hostPort: 17000
+        resources:
+          limits:
+            cpu: "0.3"
+        volumeMounts:
+        - mountPath: /data
+          name: data-6380
+      volumes:
+      - name: data-6380
+        hostPath:
+          path: /var/lib/docker/redis-dsusage-data-6380

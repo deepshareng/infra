@@ -1,0 +1,8 @@
+FROM ubuntu:14.04
+
+RUN apt-get update
+RUN apt-get install -y python-pip 
+RUN pip install shadowsocks
+ADD ./config /etc
+
+CMD sslocal -c /etc/shadowsocks.json --pid-file /tmp/sslocal.pid

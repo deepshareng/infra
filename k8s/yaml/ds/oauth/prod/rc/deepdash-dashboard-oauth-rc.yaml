@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-oauth
+  name: deepshare2-oauth
+  namespace: ds-production
+spec:
+  replicas: 2
+  selector:
+    name: deepshare2-oauth
+  template:
+    metadata:
+      labels:
+        name: deepshare2-oauth
+    spec:
+      nodeSelector:
+        env: ds-production
+        oauth: "true"
+      containers:
+      - image: r.fds.so:5000/deepshare2-oauth:201607050734
+        name: deepshare2oauth
+        command: ["/go/bin/oauth"]
+        args:
+        - -mongo-addr
+        - 10.100.30.61:30061,10.100.30.62:30062,10.100.30.63:30063
+        - -client-id
+        - deepdash-production
+        - -client-secret
+        - $de@!12sdfsxow
+        - -redirecturi
+        - http://10.100.1.13:10033/auth/code
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "1500m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1500m"
+        ports:
+        - containerPort: 10032
+          name: deepshare2oauth
+          protocol: TCP

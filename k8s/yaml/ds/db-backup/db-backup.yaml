@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: db-backup
+  name: db-bakcup
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    name: db-backup
+  template:
+    metadata:
+      labels:
+        app: db-backup
+        name: db-backup
+    spec:
+      nodeSelector:
+        ops: "true"
+        backup: "true"
+      containers:
+      - name: db-backup
+        image: r.fds.so:5000/backup3:2016072805
+        command:
+        - /opt/start-cron.sh
+        volumeMounts:
+        - name: db-backup
+          mountPath: /data
+      volumes:
+      - name: db-backup
+        hostPath:
+          path: /mnt/data/db-backup

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: ss
+  name: ss-controller
+  namespace: kube-sys
+spec:
+  replicas: 2
+  selector:
+    name: ss
+  template:
+    metadata:
+      labels:
+        name: ss
+    spec:
+      nodeSelector:
+        env: kube-sys
+      containers:
+      - image: r.fds.so:5000/ss:2.0
+        name: ss
+        ports:
+        - containerPort: 1080
+          protocol: TCP
+      - image: r.fds.so:5000/polipo:1.0
+        name: polipo
+        ports:
+        - containerPort: 8123
+          protocol: TCP

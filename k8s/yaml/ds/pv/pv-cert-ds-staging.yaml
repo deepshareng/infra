@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: cert-ds-staging
+  labels:
+    name: cert-ds-staging
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadOnlyMany
+  nfs:
+    path: "/cert"
+    server: 10.100.0.98
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: cert
+  namespace: ds-staging
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Mi

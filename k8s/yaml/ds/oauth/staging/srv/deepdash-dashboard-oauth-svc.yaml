@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-oauth
+  name: deepshare2-oauth
+  namespace: ds-staging
+spec:
+  ports:
+  - name: "deepshare2-oauth"
+    port: 10032
+    protocol: TCP
+    targetPort: 10032
+  clusterIP: 10.100.2.32
+  selector:
+    name: deepshare2-oauth

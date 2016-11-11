@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: prometheus
+  labels:
+    name: prometheus
+spec:
+  capacity:
+    storage: 50G
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/prometheus"
+    server: 10.100.0.99
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50G

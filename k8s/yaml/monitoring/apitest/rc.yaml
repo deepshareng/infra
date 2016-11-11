@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-apitest
+  name: deepshare2-apitest
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-apitest
+  template:
+    metadata:
+      labels:
+        app: deepshare2-apitest
+        name: deepshare2-apitest
+    spec:
+      nodeSelector:
+        env: ds-staging
+      containers:
+      - image: r.fds.so:5000/deepshare2-apitest:201607260417
+        name: apitest

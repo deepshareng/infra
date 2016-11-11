@@ -1,0 +1,65 @@
+name: deepshare-test
+resources:
+  vnet:
+    name: vnet-k8s-env-test
+    location: China North
+    address_space: 172.16.0.0
+    cidr: 12
+    subnet:
+      - name: cluster
+        start_ip: 172.18.0.0
+        cidr: 17
+      - name: z1
+        start_ip: 172.30.1.0
+        cidr: 24
+  conf_file: ./output/deepshare_ssh_conf
+  deployment_file: ./output/deepshare_deployment.yml
+  ssh_key:
+    key: ./output/deepshare-test1.2_ssh.key
+    pem: ./output/deepshare-test1.2_ssh.pem
+services:
+  - name: deepshare-test-m1
+    subnet: cluster
+    nodes:
+      master: 3
+      node: 0
+    hosts:
+      - name: deepshare-test-m1-master-00
+        port: 2201
+        cloud_config_file: ./output/master_d27b2f0aa36722_generated.yml
+      - name: deepshare-test-m1-master-01
+        port: 2202
+        cloud_config_file: ./output/master_d27b2f0aa36722_generated.yml
+      - name: deepshare-test-m1-master-02
+        port: 2203
+        cloud_config_file: ./output/master_d27b2f0aa36722_generated.yml
+  - name: deepshare-test-z1
+    subnet: z1
+    nodes:
+      master: 0
+      node: 7
+    hosts:
+      - name: deepshare-test-z1-node-00
+        port: 2201
+        cloud_config_file: ./output/node_f98cc25018b7ab_generated.yml
+      - name: deepshare-test-z1-node-01
+        port: 2202
+        cloud_config_file: ./output/node_f98cc25018b7ab_generated.yml
+      - name: deepshare-test-z1-node-02
+        port: 2203
+        cloud_config_file: ./output/node_f98cc25018b7ab_generated.yml
+      - name: deepshare-test-z1-node-03
+        port: 2204
+        cloud_config_file: ./output/node_f98cc25018b7ab_generated.yml
+      - name: deepshare-test-z1-node-04
+        port: 2205
+        cloud_config_file: ./output/node_f98cc25018b7ab_generated.yml
+      - name: deepshare-test-z1-node-05
+        port: 2206
+        cloud_config_file: ./output/node_f98cc25018b7ab_generated.yml
+      - name: deepshare-test-z1-node-06
+        port: 2207
+        cloud_config_file: ./output/node_5d10e6801fd16e_generated.yml
+resizing: true
+old_size: 7
+old_state_file: output/deepshare_deployment.yml

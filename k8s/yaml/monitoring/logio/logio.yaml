@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    name: logio-node17
+  name: logio-node17
+  namespace: mongodb
+spec:
+  nodeSelector:
+    mongodb: "true"
+  containers:
+  - image: r.fds.so:5000/logio-server:latest
+    name: logio-node17
+    ports:
+    - containerPort: 28778
+      hostPort: 28779
+      protocol: TCP
+  - image: r.fds.so:5000/docker-logio:latest
+    name: logio-node17-docker
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: host-socket
+    volumeMounts:
+        - mountPath: /apple-app-site
+          name: apple-app-site
+  dnsPolicy: ClusterFirst
+  volumes:
+  - hostPath:
+      path: /var/run/docker.sock
+    name: host-socket
+  - name: apple-app-site
+    persistentVolumeClaim:
+      claimName: apple-app-site

@@ -1,0 +1,253 @@
+Host qdk-m1*
+	Hostname qdk-m1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-d1*
+	Hostname qdk-d1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z1*
+	Hostname qdk-z1.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z2*
+	Hostname qdk-z2.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z3*
+	Hostname qdk-z3.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z4*
+	Hostname qdk-z4.chinacloudapp.cn
+	User core
+	Compression yes
+	LogLevel FATAL
+	StrictHostKeyChecking no
+	UserKnownHostsFile /dev/null
+	IdentitiesOnly yes
+	IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-z5*
+        Hostname qdk-z5.chinacloudapp.cn
+        User core
+        Compression yes
+        LogLevel FATAL
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        IdentitiesOnly yes
+        IdentityFile ./output/kqdk1.2_ssh.key
+
+
+Host qdk-m1-master-00
+	Port 2201
+
+Host qdk-m1-master-01
+	Port 2202
+
+Host qdk-m1-master-02
+	Port 2203
+
+Host qdk-m1-master-03
+	Port 2204
+
+Host qdk-m1-master-04
+	Port 2205
+
+Host qdk-z1-node-00
+	Port 2201
+
+Host qdk-z1-node-01
+	Port 2202
+
+Host qdk-z1-node-02
+	Port 2203
+
+Host qdk-z1-node-03
+	Port 2204
+
+Host qdk-z1-node-04
+	Port 2205
+
+Host qdk-z1-node-05
+	Port 2206
+
+Host qdk-z1-node-06
+	Port 2207
+
+Host qdk-z1-node-07
+	Port 2208
+
+Host qdk-z1-node-08
+	Port 2209
+
+Host qdk-z1-node-09
+	Port 2210
+
+Host qdk-z1-node-10
+	Port 2211
+
+Host qdk-z1-node-11
+	Port 2212
+
+Host qdk-z1-node-12
+	Port 2213
+
+Host qdk-z1-node-13
+	Port 2214
+
+Host qdk-z1-node-14
+	Port 2215
+
+Host qdk-z1-node-15
+	Port 2216
+
+Host qdk-z1-node-16
+	Port 2217
+
+Host qdk-z1-node-17
+	Port 2218
+
+Host qdk-z1-node-18
+	Port 2219
+
+Host qdk-z1-node-19
+	Port 2220
+
+Host qdk-z1-node-20
+	Port 2221
+
+Host qdk-z1-node-21
+	Port 2222
+
+Host qdk-z1-node-22
+	Port 2223
+
+Host qdk-z1-node-23
+	Port 2224
+
+Host qdk-z1-node-24
+	Port 2225
+
+Host qdk-z1-node-25
+	Port 2226
+
+Host qdk-z1-node-26
+	Port 2227
+
+Host qdk-z1-node-27
+	Port 2228
+
+Host qdk-z1-node-28
+	Port 2229
+
+Host qdk-z1-node-29
+	Port 2230
+
+Host qdk-z1-node-30
+	Port 2231
+
+Host qdk-z1-node-31
+	Port 2232
+
+Host qdk-z1-node-32
+	Port 2233
+
+Host qdk-z1-node-33
+	Port 2234
+
+Host qdk-z2-node-00
+	Port 2201
+
+Host qdk-z2-node-01
+	Port 2202
+
+Host qdk-z2-node-02
+	Port 2203
+
+Host qdk-z2-node-03
+	Port 2204
+
+Host qdk-z2-node-04
+	Port 2205
+
+Host qdk-z2-node-05
+	Port 2206
+
+Host qdk-z2-node-06
+	Port 2207
+
+Host qdk-z3-node-00
+	Port 2201
+
+Host qdk-z3-node-01
+	Port 2202
+
+Host qdk-z3-node-02
+	Port 2203
+
+Host qdk-z3-node-03
+	Port 2204
+
+Host qdk-z3-node-04
+	Port 2205
+
+Host qdk-z3-node-05
+	Port 2206
+
+Host qdk-z3-node-06
+	Port 2207
+
+Host qdk-z3-node-07
+	Port 2208
+
+Host qdk-z3-node-08
+	Port 2209
+
+Host qdk-z3-node-09
+	Port 2210
+
+Host qdk-z4-node-00
+	Port 2201
+
+Host qdk-z4-node-01
+	Port 2202
+
+Host qdk-z4-node-02
+	Port 2203

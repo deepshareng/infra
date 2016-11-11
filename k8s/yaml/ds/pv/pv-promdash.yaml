@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: promdash
+  labels:
+    name: promdash
+spec:
+  capacity:
+    storage: 50G
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/promdash"
+    server: 10.100.0.99
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: promdash
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50G

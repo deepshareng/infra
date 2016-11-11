@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepdash
+  name: deepdash
+  namespace: ds-production
+spec:
+  ports:
+  - name: "deepdash"
+    port: 10033
+    protocol: TCP
+    targetPort: 10033
+  clusterIP: 10.100.1.13
+  selector:
+    app: deepdash
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepdash
+  name: deepdash
+  namespace: ds-staging
+spec:
+  ports:
+  - name: "deepdash"
+    port: 10033
+    protocol: TCP
+    targetPort: 10033
+  clusterIP: 10.100.2.13
+  selector:
+    app: deepdash

@@ -1,0 +1,22 @@
+# spark 环境使用文档
+
+1，测试环境  
+服务器地址及登录账号：  
+  ssh droot@deepshare-t-data.chinacloudapp.cn
+  
+密码：  
+   .fds.so:d1
+   
+   
+2，spark应用程度地址以及数据源
+
+需要切换账号  
+   sudo su - mesos 
+   source ~/.bashrc ＃ 使环境配置参数生效  
+   
+＃数据源访问地址  
+   hdfs://172.30.2.4:50071/test/deepshare.json
+   
+ # spark目录地址  
+ /mnt/spark/spark-1.6.2-bin-hadoop2.6
+ 

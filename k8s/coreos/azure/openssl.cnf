@@ -1,0 +1,21 @@
+[req]
+req_extensions = v3_req
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = kubernetes
+DNS.2 = kubernetes.default
+DNS.3 = k8s.fds.so
+DNS.4 = k8s-test.fds.so
+IP.1 = 10.100.0.1
+IP.2 = 172.18.0.4
+IP.3 = 172.18.0.5
+IP.4 = 172.18.0.6
+IP.5 = 172.18.0.7
+IP.6 = 172.18.0.8
+IP.7 = 172.18.0.9
+IP.8 = 172.18.0.10

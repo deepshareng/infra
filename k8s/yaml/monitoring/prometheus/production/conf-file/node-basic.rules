@@ -1,0 +1,96 @@
+# vim: sw=2:sts=2
+# Basic rules for node_exporter.
+#
+# Copyright 2015 Martín Ferrari <tincho@tincho.org>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Memory statistics
+instance:node_memory_MemTotal:sum = node_memory_MemTotal{job="kubernetes-service-endpoints"}
+instance:node_memory_MemFree:sum = node_memory_MemFree{job="kubernetes-service-endpoints"}
+instance:node_memory_MemUsed:sum =
+    node_memory_MemTotal{job="kubernetes-service-endpoints"}
+  -
+    node_memory_MemFree{job="kubernetes-service-endpoints"}
+  -
+    node_memory_Buffers{job="kubernetes-service-endpoints"}
+  -
+    node_memory_Cached{job="kubernetes-service-endpoints"}
+
+instance:node_memory_MemUsed_per_node_memory_MemTotal:ratio = 
+  (
+      node_memory_MemTotal{job="kubernetes-service-endpoints"}
+    -
+      node_memory_MemFree{job="kubernetes-service-endpoints"}
+    -
+      node_memory_Buffers{job="kubernetes-service-endpoints"}
+    -
+      node_memory_Cached{job="kubernetes-service-endpoints"}
+  ) /
+    node_memory_MemTotal{job="kubernetes-service-endpoints"}
+
+# CPU statistics
+instance_cpu:node_cpu:rate5m = rate(node_cpu{job="kubernetes-service-endpoints"}[5m])
+instance:node_cpu:rate5m =
+    sum (rate(node_cpu{job="kubernetes-service-endpoints"}[5m])) by (instance, mode) keep_common
+
+# Network statistics
+instance_device:node_network_receive_bytes:rate5m =
+    rate(node_network_receive_bytes{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_network_receive_drop:rate5m =
+    rate(node_network_receive_drop{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_network_receive_errs:rate5m =
+    rate(node_network_receive_errs{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_network_receive_packets:rate5m =
+    rate(node_network_receive_packets{job="kubernetes-service-endpoints"}[5m])
+
+instance_device:node_network_transmit_bytes:rate5m =
+    rate(node_network_transmit_bytes{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_network_transmit_drop:rate5m =
+    rate(node_network_transmit_drop{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_network_transmit_errs:rate5m =
+    rate(node_network_transmit_errs{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_network_transmit_packets:rate5m =
+    rate(node_network_transmit_packets{job="kubernetes-service-endpoints"}[5m])
+
+# Disk statistics
+instance_device:node_disk_io_time_ms:rate5m =
+    rate(node_disk_io_time_ms{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_disk_sectors_read:rate5m =
+    rate(node_disk_sectors_read{job="kubernetes-service-endpoints"}[5m])
+instance_device:node_disk_sectors_written:rate5m =
+    rate(node_disk_sectors_written{job="kubernetes-service-endpoints"}[5m])
+
+# File system statistics
+instance_filesystem:node_filesystem_avail:sum = node_filesystem_avail{job="kubernetes-service-endpoints"}
+instance_filesystem:node_filesystem_free:sum = node_filesystem_free{job="kubernetes-service-endpoints"}
+instance_filesystem:node_filesystem_size:sum = node_filesystem_size{job="kubernetes-service-endpoints"}
+
+instance_filesystem:node_filesystem_avail_per_node_filesystem_size:ratio =
+    node_filesystem_avail{job="kubernetes-service-endpoints"}
+  /
+    node_filesystem_size{job="kubernetes-service-endpoints"}
+instance_filesystem:node_filesystem_free_per_node_filesystem_size:ratio =
+    node_filesystem_free{job="kubernetes-service-endpoints"}
+  /
+    node_filesystem_size{job="kubernetes-service-endpoints"}
+
+instance_filesystem:node_filesystem_files:sum =
+    node_filesystem_files{job="kubernetes-service-endpoints"}
+instance_filesystem:node_filesystem_files_free:sum =
+    node_filesystem_files_free{job="kubernetes-service-endpoints"}
+
+instance_filesystem:node_filesystem_files_free_per_node_filesystem_files:ratio =
+    node_filesystem_files_free{job="kubernetes-service-endpoints"}
+  /
+    node_filesystem_files{job="kubernetes-service-endpoints"}

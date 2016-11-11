@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: webapp
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    name: webapp
+  template:
+    metadata:
+      labels:
+        name: webapp
+    spec:
+      nodeName: node-02
+      containers:
+      - name: webapp
+        image: gambol99/myweb-app:v1.0
+        ports:
+        - containerPort: 8080
+          hostPort: 8080
+          protocol: TCP
+      - name: nginx
+        image: nginx-with-collcted
+        ports:
+        - containerPort: 8081
+          hostPort: 8081
+          protocol: TCP 

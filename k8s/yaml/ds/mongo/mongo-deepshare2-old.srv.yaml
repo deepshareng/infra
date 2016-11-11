@@ -1,0 +1,27 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: 2016-05-23T03:21:31Z
+    labels:
+      name: mongo-deepshare2-old
+    name: mongo-deepshare2-old
+    namespace: db
+    resourceVersion: "89437794"
+    selfLink: /api/v1/namespaces/db/services/mongo-deepshare2-old
+    uid: 722a47b3-2095-11e6-b29a-0017fa0014a7
+  spec:
+    clusterIP: 10.100.195.152
+    ports:
+    - port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      app: mongo-deepshare2-old
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}

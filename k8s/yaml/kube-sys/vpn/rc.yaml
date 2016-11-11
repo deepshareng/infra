@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: vpn-pptp
+  namespace: kube-sys
+spec:
+  replicas: 1
+  selector:
+    name: vpn-pptp
+  template:
+    metadata:
+      labels:
+        name: vpn-pptp
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        vpn: "true"
+      containers:
+      - image: r.fds.so:5000/pptp
+        name: vpn-pptp
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 1723
+          hostPort: 1723
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/ppp/chap-secrets
+          name: chap-secrets
+      volumes:
+      - name: chap-secrets
+        hostPath:
+          path: /mnt/resource/chap-secrets

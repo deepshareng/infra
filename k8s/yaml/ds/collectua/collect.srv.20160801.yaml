@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: 2016-04-04T00:07:06Z
+  labels:
+    name: collect-ua
+  name: collect-ua
+  namespace: ds-production
+  resourceVersion: "77490326"
+  selfLink: /api/v1/namespaces/ds-production/services/collect-ua
+  uid: 2a86e4b4-f9f9-11e5-b2d1-0017fa001b66
+spec:
+  clusterIP: 10.100.1.20
+  ports:
+  - name: collect-ua
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: collect-ua
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

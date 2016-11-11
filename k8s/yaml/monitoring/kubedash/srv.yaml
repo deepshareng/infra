@@ -1,0 +1,18 @@
+---
+  apiVersion: "v1"
+  kind: "Service"
+  metadata:
+    labels:
+      name: "kubedash"
+      kubernetes.io/cluster-service: "true"
+    name: "kubedash"
+    namespace: monitoring
+  spec:
+    ports:
+      -
+        port: 80
+        targetPort: 8289
+        nodePort: 31086
+    type: NodePort
+    selector:
+      name: "kubedash"

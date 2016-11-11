@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: prometheus-elasticsearch
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    name: prometheus-elasticsearch-exporter
+  template:
+    metadata:
+      labels:
+        name: prometheus-elasticsearch-exporter
+    spec:
+      nodeSelector:
+        env: monitoring
+      containers:
+      - image: r.fds.so:5000/elasticsearch-exporter:v1
+        name: elasticsearch-exporter
+        command:
+          - "/bin/elasticsearch_exporter"
+        args: ["-es.uri","10.100.78.153:9200"]
+        ports:
+        - containerPort: 9108
+          hostPort: 9108
+          protocol: TCP
+
+
+

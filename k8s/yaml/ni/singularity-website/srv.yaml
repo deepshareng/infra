@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: singularity-website
+  name: singularity-website
+  namespace: ni-production
+spec:
+  ports:
+  - name: ""
+    port: 4000
+    protocol: TCP
+    targetPort: 4000
+  clusterIP: 10.100.10.80
+  type: ClusterIP
+  selector:
+    name: singularity-website
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: singularity-website
+  name: singularity-website
+  namespace: ni-staging
+spec:
+  ports:
+  - name: ""
+    port: 4000
+    protocol: TCP
+    targetPort: 4000
+  clusterIP: 10.100.20.80
+  type: ClusterIP
+  selector:
+    name: singularity-website

@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: deepshare-website-ds-production
+  labels:
+    name: deepshare-website-ds-production
+spec:
+  capacity:
+    storage: 800Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/deepshare_website"
+    server: 10.100.0.98
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: deepshare-website
+  namespace: ds-production
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 800Mi

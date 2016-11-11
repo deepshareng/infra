@@ -1,0 +1,72 @@
+name: qdk
+resources:
+  vnet: 
+    name: vnet-multi-master-kubernetes
+    location: "China North"
+    address_space: 172.18.0.0
+    cidr: 12
+    subnet:
+      - name: cluster
+        start_ip: 172.18.0.0
+        cidr: 17
+      - name: data
+        start_ip: 172.16.0.0
+        cidr: 24
+      - name: z1
+        start_ip: 172.16.1.0
+        cidr: 24
+      - name: z2
+        start_ip: 172.16.2.0
+        cidr: 24
+      - name: z3
+        start_ip: 172.16.3.0
+        cidr: 24
+      - name: z4
+        start_ip: 172.16.4.0
+        cidr: 24
+  conf_file: ./output/qdk_ssh_conf
+  deployment_file: ./output/qdk_deployment.yml
+  ssh_key:
+    key: ./output/kqdk1.2_ssh.key
+    pem: ./output/kqdk1.2_ssh.pem
+services:
+  - name: qdk-m1
+    subnet: cluster
+    nodes:
+      master: 1
+      node: 0
+    hosts:
+      - name: qdk-m1-master-00
+        port: 2201
+        ip: 172.18.0.4
+        cloud_config_file: ./output/master_84431ae9a712f8_generated.yml
+  - name: qdk-d1
+    subnet: data
+    nodes:
+      master: 0
+      node: 0
+    hosts: []
+  - name: qdk-z1
+    subnet: z1
+    nodes:
+      master: 0
+      node: 0
+    hosts: []
+  - name: qdk-z2
+    subnet: z2
+    nodes:
+      master: 0
+      node: 0
+    hosts: []
+  - name: qdk-z3
+    subnet: z3
+    nodes:
+      master: 0
+      node: 0
+    hosts:
+  - name: qdk-z4
+    subnet: z4
+    nodes:
+      master: 0
+      node: 0
+    hosts: []

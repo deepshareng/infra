@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: prometheus-nginx-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-exporter
+      name: nginx-exporter
+    spec:
+      nodeSelector:
+        fluentd: "true"
+      containers:
+      - image: r.fds.so:5000/nginx-exporter:v1
+        name: nginx-exporter
+        ports:
+        - containerPort: 9100
+          hostPort: 9100
+          name: scrape
+      hostNetwork: true
+      hostPID: true

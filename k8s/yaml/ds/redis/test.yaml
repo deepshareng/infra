@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: redis-test
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: redis-test
+  template:
+    metadata:
+      labels:
+        name: redis-test
+    spec:
+      hostNetwork: true
+      nodeName: node-49
+      containers:
+      - name: redis-test
+        image: r.fds.so:5000/redis:3.0.6
+        command:
+        - redis-server
+        - --port 7000
+        - --cluster-enabled yes
+        - --cluster-config-file nodes.conf
+        - --cluster-node-timeout 5000
+        - --appendonly yes
+        #- --dbfilename dump.rdb
+        #- --dir /data
+        ports:
+        - containerPort: 7000
+          hostPort: 7000
+        - containerPort: 17000
+          hostPort: 17000
+        resources:
+          limits:
+            cpu: "0.3"

@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-jsapi
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-jsapi
+  template:
+    metadata:
+      labels:
+        name: deepshare2-jsapi
+        app: deepshare2-jsapi
+    spec:
+      nodeSelector:
+        env: ds-staging
+      containers:
+      - image: r.fds.so:5000/ds-jsapi-staging:201608040801
+        name: deepshare2-jsapi
+        command: ["/go/bin/deepshare2d"]
+        args:
+        - -service-types
+        - jsapi
+        - -genurl-base
+        - https://fds.so
+        - -nsq-url
+        - nsqd.ds-production:4150
+        - -http-listen
+        - 0.0.0.0:16759
+        - -match-url
+        - 10.100.2.16:16759
+        - -cookie-url
+        - 10.100.2.22:16759
+        - -appinfo-url
+        - 10.100.2.21:16759
+        - -urlgenerator-url
+        - 10.100.2.25:16759
+        - -appcookie-url
+        - 10.100.2.30:16759
+        - -redis-cluster-node-url
+        - 10.100.10.11:7001,10.100.10.12:7002,10.100.10.13:7003,10.100.10.14:7004,10.100.10.15:7005,10.100.10.16:7006
+        - -redis-pool-size
+        - "2000"
+        - -token-url
+        - 10.100.2.34:16760
+        - -log-level
+        - debug
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "900m"
+          limits:
+            memory: "1024Mi"
+            cpu: "900m"
+        ports:
+        - containerPort: 16759
+          hostPort: 16088
+          protocol: TCP

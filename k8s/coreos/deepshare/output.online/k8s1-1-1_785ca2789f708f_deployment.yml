@@ -1,0 +1,28 @@
+name: k8s1-1-1
+nodes:
+  master: 5
+  node: 0
+weave_salt: 1297aa872f2c51ef383679186283cb90e5ae4d32703a163cc3164a2ce4942976
+resources:
+  vnet: vnet-kubernetes-test
+  service: k8s1-1-1-785ca2789f708f
+  ssh_key:
+    key: ./output/k8s1-1-1_785ca2789f708f_ssh.key
+    pem: ./output/k8s1-1-1_785ca2789f708f_ssh.pem
+  storage_account: deepshare2
+hosts:
+  - name: master-00
+    port: 2201
+    cloud_config_file: ./output/master_785ca2789f708f_generated.yml
+  - name: master-01
+    port: 2202
+    cloud_config_file: ./output/master_785ca2789f708f_generated.yml
+  - name: master-02
+    port: 2203
+    cloud_config_file: ./output/master_785ca2789f708f_generated.yml
+  - name: master-03
+    port: 2204
+    cloud_config_file: ./output/master_785ca2789f708f_generated.yml
+  - name: master-04
+    port: 2205
+    cloud_config_file: ./output/master_785ca2789f708f_generated.yml

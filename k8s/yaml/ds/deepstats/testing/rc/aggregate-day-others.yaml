@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-aggregate-day-others
+  name: deepstats-aggregate-day-others
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-aggregate-day-others
+  template:
+    metadata:
+      labels:
+        name: deepstats-aggregate-day-others
+    spec:
+      nodeSelector:
+        deepshare2: "true"
+      containers:
+      - image: r.fds.so:5000/deepstats:201603311900
+        name: deepstats-aggregate-day-others
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepstatsd-aggregate"]
+        args: ["-nsqsel","nsqlookupd","-nsqlookupd-http-addr","nsqlookupd.db:4161","-mongo-addr","mongo-deepshare2.db:27017","-agg-service","day","-channel","deepstats_aggregate_day","-mongocoll","day","-mongodb","deepstats","-topics","counter,dsaction,inappdata,retention"]
+        ports:
+        - containerPort: 16759
+          name: aggregate-day
+          protocol: TCP

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: nsqd-test
+  name: nsqd-test
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    name: nsqd-test
+  template:
+    metadata:
+      labels:
+        name: nsqd-test
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        env: monitoring
+      containers:
+      - image: node-00:30500/nsq:20151022
+        name: nsqd-test
+        command: ["/nsqd"]
+        args: ["--lookupd-tcp-address=node-05:4160"]
+        ports:
+        - containerPort: 4150
+          hostPort: 4150
+          name: nsqd-tcp
+          protocol: TCP
+        - containerPort: 4151
+          hostPort: 4151
+          name: nsqd-http
+          protocol: TCP

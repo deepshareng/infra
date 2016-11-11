@@ -1,0 +1,46 @@
+name: k8s1-1-1
+nodes:
+  master: 5
+  node: 5
+weave_salt: fae627e5e97af0f9fefb18eb8d512dd2964f96024ac0df1f9cc57215d60d4479
+resources:
+  vnet: vnet-kubernetes-test
+  service: k8s1-1-1-4193472ebe891d
+  ssh_key:
+    key: ./output/k8s1-1-1_4193472ebe891d_ssh.key
+    pem: ./output/k8s1-1-1_4193472ebe891d_ssh.pem
+  storage_account: deepshare2
+hosts:
+  - name: master-00
+    port: 2201
+    cloud_config_file: ./output/master_4193472ebe891d_generated.yml
+  - name: master-01
+    port: 2202
+    cloud_config_file: ./output/master_4193472ebe891d_generated.yml
+  - name: master-02
+    port: 2203
+    cloud_config_file: ./output/master_4193472ebe891d_generated.yml
+  - name: master-03
+    port: 2204
+    cloud_config_file: ./output/master_4193472ebe891d_generated.yml
+  - name: master-04
+    port: 2205
+    cloud_config_file: ./output/master_4193472ebe891d_generated.yml
+  - name: node-00
+    port: 2206
+    cloud_config_file: ./output/node_526ce1f3eb3ccc_generated.yml
+  - name: node-01
+    port: 2207
+    cloud_config_file: ./output/node_526ce1f3eb3ccc_generated.yml
+  - name: node-02
+    port: 2208
+    cloud_config_file: ./output/node_526ce1f3eb3ccc_generated.yml
+  - name: node-03
+    port: 2209
+    cloud_config_file: ./output/node_526ce1f3eb3ccc_generated.yml
+  - name: node-04
+    port: 2210
+    cloud_config_file: ./output/node_f6633c455197d8_generated.yml
+resizing: true
+old_size: 4
+old_state_file: ./output/k8s1-1-1_526ce1f3eb3ccc_deployment.yml

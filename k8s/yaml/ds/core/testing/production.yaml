@@ -1,0 +1,443 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-appinfo
+  name: deepshare2-appinfo
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.21
+  selector:
+    app: deepshare2-appinfo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-match
+  name: deepshare2-match
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.16
+  selector:
+    app: deepshare2-match
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-cookie
+  name: deepshare2-cookie
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.22
+  selector:
+    app: deepshare2-cookie
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-inappdata
+  name: deepshare2-inappdata
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.23
+  selector:
+    app: deepshare2-inappdata
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-sharelink
+  name: deepshare2-sharelink
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.24
+  selector:
+    app: deepshare2-sharelink
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-genurl
+  name: deepshare2-genurl
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.25
+  selector:
+    app: deepshare2-genurl
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-counter
+  name: deepshare2-counter
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.26
+  selector:
+    app: deepshare2-counter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-dsaction
+  name: deepshare2-dsaction
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.27
+  selector:
+    app: deepshare2-dsaction
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-bind
+  name: deepshare2-bind
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.28
+  selector:
+    app: deepshare2-bind
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: deepshare2-dsusage
+  name: deepshare2-dsusage
+  namespace: ds-test
+spec:
+  ports:
+  - name: "deepshare2"
+    port: 16759
+    protocol: TCP
+    targetPort: 16759
+  clusterIP: 10.100.1.29
+  selector:
+    app: deepshare2-dsusage
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-sharelink
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-sharelink
+  template:
+    metadata:
+      labels:
+        name: deepshare2-sharelink
+        app: deepshare2-sharelink
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-sharelink
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","sharelinkfront","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16080
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-inappdata
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-inappdata
+  template:
+    metadata:
+      labels:
+        name: deepshare2-inappdata
+        app: deepshare2-inappdata
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-inappdata
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","inappdata","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16081
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-genurl
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-genurl
+  template:
+    metadata:
+      labels:
+        name: deepshare2-genurl
+        app: deepshare2-genurl
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-genurl
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","urlgenerator","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16082
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-counter
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-counter
+  template:
+    metadata:
+      labels:
+        name: deepshare2-counter
+        app: deepshare2-counter
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-counter
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","counter","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16083
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-dsaction
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-dsaction
+  template:
+    metadata:
+      labels:
+        name: deepshare2-dsaction
+        app: deepshare2-dsaction
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-dsaction
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","dsaction","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16084
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-bind
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-bind
+  template:
+    metadata:
+      labels:
+        name: deepshare2-bind
+        app: deepshare2-bind
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-bind
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","binddevicetocookie","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16085
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-dsusage
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-dsusage
+  template:
+    metadata:
+      labels:
+        name: deepshare2-dsusage
+        app: deepshare2-dsusage
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-dsusage
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","dsusage","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16086
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-appinfo
+  name: deepshare2-appinfo
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-appinfo
+  template:
+    metadata:
+      labels:
+        app: deepshare2-appinfo
+        name: deepshare2-appinfo
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-appinfo
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","appinfo","-genurl-base","https://ds.zhutao.xyz","-http-listen","0.0.0.0:16759","-nsq-url","10.100.114.106:4150","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-cookie
+  name: deepshare2-cookie
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-cookie
+  template:
+    metadata:
+      labels:
+        app: deepshare2-cookie
+        name: deepshare2-cookie
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-cookie
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","devicecookie","-genurl-base","https://ds.zhutao.xyz","-http-listen","0.0.0.0:16759","-nsq-url","10.100.114.106:4150","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-match
+  name: deepshare2-match
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-match
+  template:
+    metadata:
+      labels:
+        app: deepshare2-match
+        name: deepshare2-match
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201607080929
+        name: deepshare2-match
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","match","-genurl-base","https://ds.zhutao.xyz","-http-listen","0.0.0.0:16759","-nsq-url","10.100.114.106:4150","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          protocol: TCP

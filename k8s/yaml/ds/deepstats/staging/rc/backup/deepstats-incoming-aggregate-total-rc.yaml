@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-incoming-aggr-total
+  name: deepstats-incoming-aggr-total
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-incoming-aggr-total
+  template:
+    metadata:
+      labels:
+        name: deepstats-incoming-aggr-total
+    spec:
+      nodeSelector:
+        env: ds-staging
+      containers:
+      - image: r.fds.so:5000/deepstats-incoming-agg-total-staging:20160520
+        name: deepstats-incoming
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepstatsd-incoming-aggregate"]
+        args: ["-agg-service","total","-nsqsel","nsqlookupd","-nsqlookupd-http-addr","nsqlookupd.ds-production:4161","-channel","deepstats_aggregate_day_20160520","-mongo-addr","mongo.ds-production:27017","-mongocoll","total","-mongodb","deepstats_aggregate_20160520"]

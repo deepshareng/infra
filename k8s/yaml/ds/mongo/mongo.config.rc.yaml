@@ -1,0 +1,210 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-config-30051
+  namespace: ds-db
+  labels:
+    name: mongo-config-30051
+spec:
+  ports:
+  - name: mongo-config-30051
+    port: 30051
+    protocol: TCP
+    targetPort: 30051
+  clusterIP: 10.100.30.51
+  selector:
+    app: mongo-config-30051
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-config-30052
+  namespace: ds-db
+  labels:
+    name: mongo-config-30052
+spec:
+  ports:
+  - name: mongo-config-30052
+    port: 30052
+    protocol: TCP
+    targetPort: 30052
+  clusterIP: 10.100.30.52
+  selector:
+    app: mongo-config-30052
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-config-30053
+  namespace: ds-db
+  labels:
+    name: mongo-config-30053
+spec:
+  ports:
+  - name: mongo-config-30053
+    port: 30053
+    protocol: TCP
+    targetPort: 30053
+  clusterIP: 10.100.30.53
+  selector:
+    app: mongo-config-30053
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-config-30051
+  namespace: ds-db
+  labels:
+    app: mongo-config-30051
+spec:
+  replicas: 1
+  selector:
+    app: mongo-config-30051
+  template:
+    metadata:
+      name: mongo-config-30051
+      labels:
+        app: mongo-config-30051
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        config: "30051"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-config-30051
+        command:
+        - mongod
+        - --storageEngine
+        - "wiredTiger"
+        - --port
+        - "30051"
+        - --dbpath=/data/mongo
+        - --directoryperdb
+        - --configsvr
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - name: mongo-30051
+          containerPort: 30051
+          protocol: TCP
+          hostPort: 30051
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/config1
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-config-30052
+  namespace: ds-db
+  labels:
+    app: mongo-config-30052
+spec:
+  replicas: 1
+  selector:
+    app: mongo-config-30052
+  template:
+    metadata:
+      name: mongo-config-30052
+      labels:
+        app: mongo-config-30052
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        config: "30052"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-config-30052
+        command:
+        - mongod
+        - --storageEngine
+        - "wiredTiger"
+        - --port
+        - "30052"
+        - --dbpath=/data/mongo
+        - --configsvr
+        - --directoryperdb
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - name: mongo-30052
+          containerPort: 30052
+          protocol: TCP
+          hostPort: 30052
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/config2
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-config-30053
+  namespace: ds-db
+  labels:
+    app: mongo-config-30053
+spec:
+  replicas: 1
+  selector:
+    app: mongo-config-30053
+  template:
+    metadata:
+      name: mongo-config-30053
+      labels:
+        app: mongo-config-30053
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        config: "30053"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-config-30053
+        command:
+        - mongod
+        - --storageEngine
+        - "wiredTiger"
+        - --port
+        - "30053"
+        - --dbpath=/data/mongo
+        - --directoryperdb
+        - --configsvr
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - name: mongo-30053
+          containerPort: 30053
+          protocol: TCP
+          hostPort: 30053
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/config3

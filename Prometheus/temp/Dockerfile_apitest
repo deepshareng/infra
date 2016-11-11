@@ -1,0 +1,15 @@
+FROM r.fds.so:5000/golang1.5.3
+
+RUN touch /opt/deepshare2-api-error.log
+RUN apt-get install -y msmtp cron rsyslog
+ADD ./file/start-service.sh
+ADD ./file/testapi.sh
+ADD ./file/crontab /etc
+ADD ./file/msmtprc /etc
+ADD . /go/src/github.com/MISingularity/deepshare2
+WORKDIR /go/src/github.com/MISingularity/deepshare2
+RUN go get -v -d ./...
+RUN go test -c -o deepshare2_apitest.test ./test/testapi
+RUN chmod +x /opt/start-service.sh
+RUN chmod +x /opt/testapi.sh
+CMD /bin/bash /opt/start-service.sh &&  tail -f  /var/log/dpkg.log

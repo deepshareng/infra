@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-oauth
+  name: deepshare2-oauth
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-oauth
+  template:
+    metadata:
+      labels:
+        name: deepshare2-oauth
+    spec:
+      nodeSelector:
+        env: ds-staging
+        oauth: "true"
+      containers:
+      - image: r.fds.so:5000/deepoauth-staging:201607050703
+        name: deepshare2-oauth
+        command: ["/go/bin/oauth"]
+        args: 
+        - -mongo-addr
+        - 10.100.30.61:30061,10.100.30.62:30062,10.100.30.63:30063
+        - -client-id
+        - deepdash-staging
+        - -client-secret
+        - deepdash-staging
+        - -redirecturi
+        - http://10.100.2.13:10033/auth/code
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "900m"
+          limits:
+            memory: "1024Mi"
+            cpu: "900m"
+        ports:
+        - containerPort: 10032
+          name: oauth
+          protocol: TCP

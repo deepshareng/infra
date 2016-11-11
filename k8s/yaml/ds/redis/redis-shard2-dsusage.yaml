@@ -1,0 +1,467 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard2-8001
+  name: redis-shard2-8001
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard2-8001
+    port: 8001
+    protocol: TCP
+    targetPort: 8001
+  - name: redis-shard2-18001
+    port: 18001
+    protocol: TCP
+    targetPort: 18001
+  clusterIP: 10.100.11.11
+  selector:
+    app: redis-shard2-8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard2-8002
+  name: redis-shard2-8002
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard2-8002
+    port: 8002
+    protocol: TCP
+    targetPort: 8002
+  - name: redis-shard2-18002
+    port: 18002
+    protocol: TCP
+    targetPort: 18002
+  clusterIP: 10.100.11.12
+  selector:
+    app: redis-shard2-8002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard2-8003
+  name: redis-shard2-8003
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard2-8003
+    port: 8003
+    protocol: TCP
+    targetPort: 8003
+  - name: redis-shard2-18003
+    port: 18003
+    protocol: TCP
+    targetPort: 18003
+  clusterIP: 10.100.11.13
+  selector:
+    app: redis-shard2-8003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard2-8004
+  name: redis-shard2-8004
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard2-8004
+    port: 8004
+    protocol: TCP
+    targetPort: 8004
+  - name: redis-shard2-18004
+    port: 18004
+    protocol: TCP
+    targetPort: 18004
+  clusterIP: 10.100.11.14
+  selector:
+    app: redis-shard2-8004
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard2-8005
+  name: redis-shard2-8005
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard2-8005
+    port: 8005
+    protocol: TCP
+    targetPort: 8005
+  - name: redis-shard2-18005
+    port: 18005
+    protocol: TCP
+    targetPort: 18005
+  clusterIP: 10.100.11.15
+  selector:
+    app: redis-shard2-8005
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard2-8006
+  name: redis-shard2-8006
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard2-8006
+    port: 8006
+    protocol: TCP
+    targetPort: 8006
+  - name: redis-shard2-18006
+    port: 18006
+    protocol: TCP
+    targetPort: 18006
+  clusterIP: 10.100.11.16
+  selector:
+    app: redis-shard2-8006
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard2-8001
+  name: redis-shard2-8001
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard2-8001
+  template:
+    metadata:
+      labels:
+        app: redis-shard2-8001
+      name: redis-shard2-8001
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard2-8001: "true"
+      containers:
+      - name: redis-shard2-8001
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 8001"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 8001.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "12288Mi"
+            cpu: "3900m"
+          limits:
+            memory: "12288Mi"
+            cpu: "3900m"
+        ports:
+        - name: redis-8001
+          containerPort: 8001
+          protocol: TCP
+          hostPort: 8001
+        - name: redis-18001
+          containerPort: 18001
+          protocol: TCP
+          hostPort: 18001
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/8001
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard2-8002
+  name: redis-shard2-8002
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard2-8002
+  template:
+    metadata:
+      labels:
+        app: redis-shard2-8002
+      name: redis-shard2-8002
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard2-8002: "true"
+      containers:
+      - name: redis-shard2-8002
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 8002"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 8002.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "12288Mi"
+            cpu: "3900m"
+          limits:
+            memory: "12288Mi"
+            cpu: "3900m"
+        ports:
+        - name: redis-8002
+          containerPort: 8002
+          protocol: TCP
+          hostPort: 8002
+        - name: redis-18002
+          containerPort: 18002
+          protocol: TCP
+          hostPort: 18002
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/8002
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard2-8003
+  name: redis-shard2-8003
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard2-8003
+  template:
+    metadata:
+      labels:
+        app: redis-shard2-8003
+      name: redis-shard2-8003
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard2-8003: "true"
+      containers:
+      - name: redis-shard2-8003
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 8003"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 8003.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "12288Mi"
+            cpu: "3900m"
+          limits:
+            memory: "12288Mi"
+            cpu: "3900m"
+        ports:
+        - name: redis-8003
+          containerPort: 8003
+          protocol: TCP
+          hostPort: 8003
+        - name: redis-18003
+          containerPort: 18003
+          protocol: TCP
+          hostPort: 18003
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/8003
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard2-8004
+  name: redis-shard2-8004
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard2-8004
+  template:
+    metadata:
+      labels:
+        app: redis-shard2-8004
+      name: redis-shard2-8004
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard2-8004: "true"
+      containers:
+      - name: redis-shard2-8004
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 8004"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 8004.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "12288Mi"
+            cpu: "3900m"
+          limits:
+            memory: "12288Mi"
+            cpu: "3900m"
+        ports:
+        - name: redis-8004
+          containerPort: 8004
+          protocol: TCP
+          hostPort: 8004
+        - name: redis-18004
+          containerPort: 18004
+          protocol: TCP
+          hostPort: 18004
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/8004
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard2-8005
+  name: redis-shard2-8005
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard2-8005
+  template:
+    metadata:
+      labels:
+        app: redis-shard2-8005
+      name: redis-shard2-8005
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard2-8005: "true"
+      containers:
+      - name: redis-shard2-8005
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 8005"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 8005.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "12288Mi"
+            cpu: "3900m"
+          limits:
+            memory: "12288Mi"
+            cpu: "3900m"
+        ports:
+        - name: redis-8005
+          containerPort: 8005
+          protocol: TCP
+          hostPort: 8005
+        - name: redis-18005
+          containerPort: 18005
+          protocol: TCP
+          hostPort: 18005
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/8005
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard2-8006
+  name: redis-shard2-8006
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard2-8006
+  template:
+    metadata:
+      labels:
+        app: redis-shard2-8006
+      name: redis-shard2-8006
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard2-8006: "true"
+      containers:
+      - name: redis-shard2-8001
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 8006"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 8006.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "12288Mi"
+            cpu: "3900m"
+          limits:
+            memory: "12288Mi"
+            cpu: "3900m"
+        ports:
+        - name: redis-8006
+          containerPort: 8006
+          protocol: TCP
+          hostPort: 8006
+        - name: redis-18006
+          containerPort: 18006
+          protocol: TCP
+          hostPort: 18006
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/8006

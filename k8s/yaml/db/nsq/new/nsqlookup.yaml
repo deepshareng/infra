@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: nsqlookupd
+  name: nsqlookupd
+  namespace: ds-production
+spec:
+  ports:
+  - name: "nsqlookupd-tcp"
+    port: 4160
+    protocol: TCP
+    targetPort: 4160
+  - name: "nsqlookupd-http"
+    port: 4161
+    protocol: TCP
+    targetPort: 4161
+  selector:
+    app: nsqlookupd
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: nsqlookupd
+  name: nsqlookupd
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: nsqlookupd
+  template:
+    metadata:
+      labels:
+        name: nsqlookupd
+        app: nsqlookupd
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        env: ds-production
+        nsqlookupd: "true"
+      containers:
+      - image: node-00:30500/nsq:20151022
+        name: nsqlookupd
+        command: ["/nsqlookupd"]
+        ports:
+        - containerPort: 4160
+          hostPort: 4160
+          name: nsqlookupd-tcp
+          protocol: TCP
+        - containerPort: 4161
+          hostPort: 4161
+          name: nsqlookupd-http
+          protocol: TCP

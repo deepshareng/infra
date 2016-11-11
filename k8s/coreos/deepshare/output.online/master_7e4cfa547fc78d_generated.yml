@@ -1,0 +1,140 @@
+#cloud-config
+write-files:
+  - path: /etc/conf.d/nfs
+    permissions: '0644'
+    content: |
+      OPTS_RPC_MOUNTD=""
+  - path: /opt/bin/wupiao
+    permissions: '0755'
+    content: "#!/bin/bash\n# [w]ait [u]ntil [p]ort [i]s [a]ctually [o]pen\n[ -n \"$1\" ] && \\\n  until curl -o /dev/null -sIf http://${1}; do \\\n    sleep 1 && echo .;\n  done;\nexit $?\n"
+coreos:
+  fleet:
+    metadata: role=master
+  units:
+    - name: etcd2.service
+      command: start
+      drop-ins:
+        - name: 50-cluster-setting.conf
+          content: >
+            [Service]
+
+            Environment=ETCD_DISCOVERY_SRV=fds.so
+
+            Environment=ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:2379
+
+            Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2380
+
+            Environment=ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:2379,http://127.0.0.1:2379
+
+            Environment=ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2380,http://127.0.0.1:2380
+
+            Environment=ETCD_CLUSTER_TOKEN=k8s_etcd
+
+            Environment=ETCD_INITIAL_CLUSTER_STATE=new
+
+            Environment=ETCD_NAME=%H
+    - name: early-docker.service
+      command: start
+      drop-ins:
+        - name: 10-http-proxy.conf
+          content: >
+            [Service]
+
+            Environment='HTTP_PROXY=http://misingularity:misingularity@qd.trafficmanager.cn:8123'
+    - name: setup-network-environment.service
+      command: start
+      content: >
+        [Unit]
+
+        Description=Setup Network Environment
+
+        Documentation=https://github.com/kelseyhightower/setup-network-environment
+
+        Requires=network-online.target
+
+        After=network-online.target
+
+
+
+        [Service]
+
+        ExecStartPre=-/usr/bin/mkdir -p /opt/bin
+
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/setup-network-environment -z
+        /opt/bin/setup-network-environment
+        https://softrepo.blob.core.chinacloudapi.cn/platform/setup-network-environment
+
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/setup-network-environment
+
+        ExecStart=/opt/bin/setup-network-environment
+
+        RemainAfterExit=yes
+
+        Type=oneshot
+    - name: fleet.service
+      command: start
+    - name: flanneld.service
+      command: start
+      drop-ins:
+        - name: 50-network-config.conf
+          content: >
+            [Unit]
+
+            Requires=etcd2.service
+
+            [Service]
+
+            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config
+            '{"Network":"10.244.0.0/16", "Backend": {"Type": "vxlan"}}'
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: 50-registry.conf
+          content: >
+            [unit]
+
+            After=docker.socket early-docker.target network.target
+            flanneld.service
+
+            Requires=docker.socket early-docker.target flanneld.service
+
+            [Service]
+
+            Environment='DOCKER_OPTS=--insecure-registry=r.fds.so:5000'
+    - name: kube-apiserver.service
+      command: start
+      content: "[Unit]\nDescription=Kubernetes API Server\nDocumentation=https://github.com/GoogleCloudPlatform/kubernetes\nRequires=setup-network-environment.service etcd2.service\nAfter=setup-network-environment.service etcd2.service\n\n[Service]\nEnvironmentFile=/etc/network-environment\nExecStartPre=-/usr/bin/mkdir -p /opt/bin\nExecStartPre=/usr/bin/curl -L -o /opt/bin/ca.pem -z /opt/bin/ca.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/ca.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/apiserver-key.pem -z /opt/bin/apiserver-key.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/apiserver-key.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/apiserver.pem -z /opt/bin/apiserver.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/apiserver.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-apiserver -z /opt/bin/kube-apiserver https://softrepo.blob.core.chinacloudapi.cn/k8s1-1-1/kube-apiserver\nExecStartPre=/usr/bin/chmod +x /opt/bin/kube-apiserver\nExecStartPre=/usr/bin/curl -L -o /opt/bin/kubectl -z /opt/bin/kubectl https://softrepo.blob.core.chinacloudapi.cn/k8s1-1-1/kubectl-linux-386\nExecStartPre=/usr/bin/chmod +x /opt/bin/kubectl\nExecStartPre=/opt/bin/wupiao 127.0.0.1:2379/v2/machines\nExecStart=/opt/bin/kube-apiserver \\\n--service-account-key-file=/opt/bin/apiserver-key.pem \\\n--tls-cert-file=/opt/bin/apiserver.pem \\\n--tls-private-key-file=/opt/bin/apiserver-key.pem \\\n--client-ca-file=/opt/bin/ca.pem \\\n--admission-control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \\\n--runtime-config=api/v1 \\\n--runtime-config=extensions/v1beta1/daemonsets=true,extensions/v1beta1/ingress=true,extensions/v1beta1/deployments=true,extensions/v1beta1/jobs=true \\\n--allow-privileged=true \\\n--insecure-port=8080 \\\n--kubelet-https=true \\\n--secure-port=6443 \\\n--bind-address=0.0.0.0 \\\n--service-cluster-ip-range=10.100.0.0/16 \\\n--etcd-servers=http://${DEFAULT_IPV4}:2379 \\\n--advertise-address=${DEFAULT_IPV4} \\\n--logtostderr=true\nRestart=always\nRestartSec=10\n"
+    - name: kube-controller-manager.service
+      command: start
+      content: "[Unit]\nDescription=Kubernetes Controller Manager\nDocumentation=https://github.com/GoogleCloudPlatform/kubernetes\nRequires=kube-apiserver.service\nAfter=kube-apiserver.service\n\n[Service]\nExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-controller-manager -z /opt/bin/kube-controller-manager https://softrepo.blob.core.chinacloudapi.cn/k8s1-1-1/kube-controller-manager\nExecStartPre=/usr/bin/chmod +x /opt/bin/kube-controller-manager\nExecStart=/opt/bin/kube-controller-manager \\\n--service-account-private-key-file=/opt/bin/apiserver-key.pem \\\n--root-ca-file=/opt/bin/ca.pem \\\n--master=http://127.0.0.1:8080 \\\n--logtostderr=true\nRestart=always\nRestartSec=10\n"
+    - name: kube-scheduler.service
+      command: start
+      content: >
+        [Unit]
+
+        Description=Kubernetes Scheduler
+
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+        Requires=kube-apiserver.service
+
+        After=kube-apiserver.service
+
+
+
+        [Service]
+
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-scheduler -z
+        /opt/bin/kube-scheduler
+        https://softrepo.blob.core.chinacloudapi.cn/k8s1-1-1/kube-scheduler
+
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/kube-scheduler
+
+        ExecStart=/opt/bin/kube-scheduler --master=http://127.0.0.1:8080
+
+        Restart=always
+
+        RestartSec=10
+  update:
+    group: stable
+    reboot-strategy: 'off'

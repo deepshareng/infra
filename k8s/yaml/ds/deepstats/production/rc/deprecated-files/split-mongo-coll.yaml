@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-split-mongo-coll
+  name: deepstats-split-mongo-coll
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-split-mongo-coll
+  template:
+    metadata:
+      labels:
+        name: deepstats-split-mongo-coll
+    spec:
+      nodeSelector:
+        env: production
+      containers:
+      - image: node-00:30500/split-coll:201603311844
+        name: deepstats-split-mongo-coll
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepstats-split-coll"]
+        args: ["-mongo-addr","mongo-deepshare2.db:27017","-mongocoll-day-aggregate","day","-mongocoll-hour-aggregate","hour","-mongocoll-total-aggregate","total"]

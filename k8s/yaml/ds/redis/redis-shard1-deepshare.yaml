@@ -1,0 +1,467 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard1-7001
+  name: redis-shard1-7001
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard1-7001
+    port: 7001
+    protocol: TCP
+    targetPort: 7001
+  - name: redis-shard1-17001
+    port: 17001
+    protocol: TCP
+    targetPort: 17001
+  clusterIP: 10.100.10.11
+  selector:
+    app: redis-shard1-7001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard1-7002
+  name: redis-shard1-7002
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard1-7002
+    port: 7002
+    protocol: TCP
+    targetPort: 7002
+  - name: redis-shard1-17002
+    port: 17002
+    protocol: TCP
+    targetPort: 17002
+  clusterIP: 10.100.10.12
+  selector:
+    app: redis-shard1-7002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard1-7003
+  name: redis-shard1-7003
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard1-7003
+    port: 7003
+    protocol: TCP
+    targetPort: 7003
+  - name: redis-shard1-17003
+    port: 17003
+    protocol: TCP
+    targetPort: 17003
+  clusterIP: 10.100.10.13
+  selector:
+    app: redis-shard1-7003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard1-7004
+  name: redis-shard1-7004
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard1-7004
+    port: 7004
+    protocol: TCP
+    targetPort: 7004
+  - name: redis-shard1-17004
+    port: 17004
+    protocol: TCP
+    targetPort: 17004
+  clusterIP: 10.100.10.14
+  selector:
+    app: redis-shard1-7004
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard1-7005
+  name: redis-shard1-7005
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard1-7005
+    port: 7005
+    protocol: TCP
+    targetPort: 7005
+  - name: redis-shard1-17005
+    port: 17005
+    protocol: TCP
+    targetPort: 17005
+  clusterIP: 10.100.10.15
+  selector:
+    app: redis-shard1-7005
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: redis-shard1-7006
+  name: redis-shard1-7006
+  namespace: ds-db
+spec:
+  ports:
+  - name: redis-shard1-7006
+    port: 7006
+    protocol: TCP
+    targetPort: 7006
+  - name: redis-shard1-17006
+    port: 17006
+    protocol: TCP
+    targetPort: 17006
+  clusterIP: 10.100.10.16
+  selector:
+    app: redis-shard1-7006
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard1-7001
+  name: redis-shard1-7001
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard1-7001
+  template:
+    metadata:
+      labels:
+        app: redis-shard1-7001
+      name: redis-shard1-7001
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard1-7001: "true"
+      containers:
+      - name: redis-shard1-7001
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 7001"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 7001.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "1900m"
+          limits:
+            memory: "8192Mi"
+            cpu: "1900m"
+        ports:
+        - name: redis-7001
+          containerPort: 7001
+          protocol: TCP
+          hostPort: 7001
+        - name: redis-17001
+          containerPort: 17001
+          protocol: TCP
+          hostPort: 17001
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/7001
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard1-7002
+  name: redis-shard1-7002
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard1-7002
+  template:
+    metadata:
+      labels:
+        app: redis-shard1-7002
+      name: redis-shard1-7002
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard1-7002: "true"
+      containers:
+      - name: redis-shard1-7002
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 7002"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 7002.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "1900m"
+          limits:
+            memory: "8192Mi"
+            cpu: "1900m"
+        ports:
+        - name: redis-7002
+          containerPort: 7002
+          protocol: TCP
+          hostPort: 7002
+        - name: redis-17002
+          containerPort: 17002
+          protocol: TCP
+          hostPort: 17002
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/7002
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard1-7003
+  name: redis-shard1-7003
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard1-7003
+  template:
+    metadata:
+      labels:
+        app: redis-shard1-7003
+      name: redis-shard1-7003
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard1-7003: "true"
+      containers:
+      - name: redis-shard1-7003
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 7003"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 7003.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "1900m"
+          limits:
+            memory: "8192Mi"
+            cpu: "1900m"
+        ports:
+        - name: redis-7003
+          containerPort: 7003
+          protocol: TCP
+          hostPort: 7003
+        - name: redis-17003
+          containerPort: 17003
+          protocol: TCP
+          hostPort: 17003
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/7003
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard1-7004
+  name: redis-shard1-7004
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard1-7004
+  template:
+    metadata:
+      labels:
+        app: redis-shard1-7004
+      name: redis-shard1-7004
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard1-7004: "true"
+      containers:
+      - name: redis-shard1-7004
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 7004"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 7004.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "1900m"
+          limits:
+            memory: "8192Mi"
+            cpu: "1900m"
+        ports:
+        - name: redis-7004
+          containerPort: 7004
+          protocol: TCP
+          hostPort: 7004
+        - name: redis-17004
+          containerPort: 17004
+          protocol: TCP
+          hostPort: 17004
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/7004
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard1-7005
+  name: redis-shard1-7005
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard1-7005
+  template:
+    metadata:
+      labels:
+        app: redis-shard1-7005
+      name: redis-shard1-7005
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard1-7005: "true"
+      containers:
+      - name: redis-shard1-7005
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 7005"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 7005.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "1900m"
+          limits:
+            memory: "8192Mi"
+            cpu: "1900m"
+        ports:
+        - name: redis-7005
+          containerPort: 7005
+          protocol: TCP
+          hostPort: 7005
+        - name: redis-17005
+          containerPort: 17005
+          protocol: TCP
+          hostPort: 17005
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/7005
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: redis-shard1-7006
+  name: redis-shard1-7006
+  namespace: ds-db
+spec:
+  replicas: 1
+  selector:
+    app: redis-shard1-7006
+  template:
+    metadata:
+      labels:
+        app: redis-shard1-7006
+      name: redis-shard1-7006
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        shard1-7006: "true"
+      containers:
+      - name: redis-shard1-7001
+        image: r.fds.so:5000/redis:3.2.2
+        command:
+        - redis-server
+        - "--protected-mode no"
+        - "--port 7006"
+        - "--cluster-enabled yes"
+        - "--cluster-config-file 7006.conf"
+        - "--cluster-node-timeout 5000"
+        - "--appendonly yes"
+        - "--dir /data/redis"
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "1900m"
+          limits:
+            memory: "8192Mi"
+            cpu: "1900m"
+        ports:
+        - name: redis-7006
+          containerPort: 7006
+          protocol: TCP
+          hostPort: 7006
+        - name: redis-17006
+          containerPort: 17006
+          protocol: TCP
+          hostPort: 17006
+        volumeMounts:
+        - mountPath: /data/redis
+          name: redis-data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /mnt/data/redis/7006

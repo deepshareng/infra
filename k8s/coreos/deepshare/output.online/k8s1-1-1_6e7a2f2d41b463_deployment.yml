@@ -1,0 +1,88 @@
+name: k8s1-1-1
+nodes:
+  master: 5
+  node: 19
+weave_salt: 3e4d3628cb8094083b352609b8efa6628e6a22ef662ced0d925a16583d55b0d2
+resources:
+  vnet: vnet-kubernetes-test
+  service: k8s1-1-1-367ba3b56d4c31
+  ssh_key:
+    key: ./output/k8s1-1-1_367ba3b56d4c31_ssh.key
+    pem: ./output/k8s1-1-1_367ba3b56d4c31_ssh.pem
+  storage_account: deepshare2
+hosts:
+  - name: master-00
+    port: 2201
+    cloud_config_file: ./output/master_367ba3b56d4c31_generated.yml
+  - name: master-01
+    port: 2202
+    cloud_config_file: ./output/master_367ba3b56d4c31_generated.yml
+  - name: master-02
+    port: 2203
+    cloud_config_file: ./output/master_367ba3b56d4c31_generated.yml
+  - name: master-03
+    port: 2204
+    cloud_config_file: ./output/master_367ba3b56d4c31_generated.yml
+  - name: master-04
+    port: 2205
+    cloud_config_file: ./output/master_367ba3b56d4c31_generated.yml
+  - name: node-00
+    port: 2206
+    cloud_config_file: ./output/node_4e7ca789635271_generated.yml
+  - name: node-01
+    port: 2207
+    cloud_config_file: ./output/node_4e7ca789635271_generated.yml
+  - name: node-02
+    port: 2208
+    cloud_config_file: ./output/node_4e7ca789635271_generated.yml
+  - name: node-03
+    port: 2209
+    cloud_config_file: ./output/node_4e7ca789635271_generated.yml
+  - name: node-04
+    port: 2210
+    cloud_config_file: ./output/node_4e7ca789635271_generated.yml
+  - name: node-05
+    port: 2211
+    cloud_config_file: ./output/node_4e7ca789635271_generated.yml
+  - name: node-06
+    port: 2212
+    cloud_config_file: ./output/node_96e41c27136492_generated.yml
+  - name: node-07
+    port: 2213
+    cloud_config_file: ./output/node_96e41c27136492_generated.yml
+  - name: node-08
+    port: 2214
+    cloud_config_file: ./output/node_96e41c27136492_generated.yml
+  - name: node-09
+    port: 2215
+    cloud_config_file: ./output/node_96e41c27136492_generated.yml
+  - name: node-10
+    port: 2216
+    cloud_config_file: ./output/node_69b33d992aa9a9_generated.yml
+  - name: node-11
+    port: 2217
+    cloud_config_file: ./output/node_69b33d992aa9a9_generated.yml
+  - name: node-12
+    port: 2218
+    cloud_config_file: ./output/node_69b33d992aa9a9_generated.yml
+  - name: node-13
+    port: 2219
+    cloud_config_file: ./output/node_69b33d992aa9a9_generated.yml
+  - name: node-14
+    port: 2220
+    cloud_config_file: ./output/node_6e7a2f2d41b463_generated.yml
+  - name: node-15
+    port: 2221
+    cloud_config_file: ./output/node_6e7a2f2d41b463_generated.yml
+  - name: node-16
+    port: 2222
+    cloud_config_file: ./output/node_6e7a2f2d41b463_generated.yml
+  - name: node-17
+    port: 2223
+    cloud_config_file: ./output/node_6e7a2f2d41b463_generated.yml
+  - name: node-18
+    port: 2224
+    cloud_config_file: ./output/node_6e7a2f2d41b463_generated.yml
+resizing: true
+old_size: 14
+old_state_file: ./output/k8s1-1-1_69b33d992aa9a9_deployment.yml

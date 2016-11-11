@@ -1,0 +1,184 @@
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"prometheus",
+        "labels":{
+            "name":"prometheus"
+        },
+        "namespace":"monitoring"
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9090,
+            "targetPort":9090,
+                "protocol":"TCP",
+            "nodePort": 31090
+        }],
+        "selector":{
+            "name":"kube-prometheus"
+        }
+    }
+}
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"pushgateway",
+        "labels":{
+            "name":"pushgateway"
+        },
+        "namespace":"monitoring"
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9091,
+            "targetPort":9091,
+                "protocol":"TCP"
+        }],
+        "clusterIP":"10.100.48.89",
+        "type": "ClusterIP",
+        "selector":{
+            "name":"kube-prometheus"
+        }
+    }
+}
+
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"alertmanager",
+        "labels":{
+            "name":"alertmanager"
+        },
+        "namespace":"monitoring"
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9093,
+            "targetPort":9093,
+                "protocol":"TCP"
+        }],
+        "clusterIP":"10.100.48.90",
+        "type": "ClusterIP",
+        "selector":{
+            "name":"kube-prometheus-alertmanager"
+        }
+    }
+}
+
+
+
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"blackbox-exporter",
+        "labels":{
+            "name":"blackbox-exporter"
+        },
+        "namespace":"monitoring"
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9115,
+            "targetPort":9115,
+                "protocol":"TCP"
+        }],
+        "clusterIP":"10.100.48.91",
+        "type": "ClusterIP",
+        "selector":{
+            "name":"prometheus-blackbox-exporter"
+        }
+    }
+}
+
+
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"redis-exporter",
+        "labels":{
+            "name":"redis-exporter"
+        },
+        "namespace":"monitoring"
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9121,
+            "targetPort":9121,
+                "protocol":"TCP"
+        }],
+        "clusterIP":"10.100.48.92",
+        "type": "ClusterIP",
+        "selector":{
+            "name":"prometheus-redis-exporter"
+        }
+    }
+}
+
+
+
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"nsq-exporter",
+        "labels":{
+            "name":"nsq-exporter"
+        },
+        "namespace":"monitoring"
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9117,
+            "targetPort":9117,
+                "protocol":"TCP"
+        }],
+        "clusterIP":"10.100.48.93",
+        "type": "ClusterIP",
+        "selector":{
+            "name":"prometheus-nsq-exporter"
+        }
+    }
+}
+
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"elasticsearch-exporter",
+        "labels":{
+            "name":"elasticsearch-exporter"
+        },
+        "namespace":"monitoring"
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9108,
+            "targetPort":9108,
+                "protocol":"TCP"
+        }],
+        "clusterIP":"10.100.48.94",
+        "type": "ClusterIP",
+        "selector":{
+            "name":"prometheus-elasticsearch-exporter"
+        }
+    }
+}

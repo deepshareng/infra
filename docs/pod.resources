@@ -1,0 +1,111 @@
+mongo-cluster:
+
+shard:
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "1000m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+
+config:
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+mongos:
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+
+
+redis-cluster:
+redis:
+        resources:
+          requests:
+            memory: "9116Mi"
+            cpu: "1800m"
+          limits:
+            memory: "9116Mi"
+            cpu: "1800m"
+
+
+
+----------------
+core@deepshare-test-m1-master-02 ~/resource $ cat limit.yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limits
+  namespace: limit-example
+spec:
+  limits:
+  - type: Pod
+    max:
+      cpu: 500m
+      memory: 512Mi
+    min:
+      cpu: 125m
+      memory: 256Mi
+  - type: Container
+    max:
+      cpu: 500m
+      memory: 512Mi
+    min:
+      cpu: 125m
+      memory: 256Mi
+
+Default  Max    Min
+Pod CPU  500m   125m   
+Pod Mem  512Mi  256Mi
+Col CPU  500    125m
+Col Mem  512    256Mi
+-----------------------
+1.Pod CPU Max 调到1000m,其它不变
+  容器占用资源不变
+2.Col CPU Max 调到1000m,其它不变
+  容器创建失败,错误信息如下:
+  Error creating: pods "redis-7000-" is forbidden: Maximum cpu usage per Pod is 500m, but limit is 1.
+  说明: 容器的资源限制必须小于或者等于Pod的资源限制
+3.Col CPU Min 调到500,与 CPU Max一致
+  容器创建成功,一个Pod只能创建一个容器,并且此容器占用所有Pod资源
+4.Pod CPU/Mem Max 和 Col CPU/Mem Max 值都调为1000m
+  容器创建成功,我们会发现Col的Default值有两种变化:
+  1.Default值 = Max值
+  2.Default值随着Max值的增长而增长,减小而减小
+5.CPU数值说明
+  1000m 表示单核CPU使用率100%
+  500m  表示单核CPU使用率100%
+  如果你的CPU核数是4,那么:
+  1000m 表示单核CPU使用率100%,实际CPU使用率为25%
+  500m  表示单核CPU使用率100%,实际CPU使用率为12%
+  Pod和Col的Max值最大可以设置为4000m
+6.Mem数值说明
+  256Mi = 256M内存
+  512Mi = 512M内存
+  内存使用率= Max/Total
+7.删除Col CPU/Mem Max
+  Col Default = Col Min
+  出现报错信息:
+  Error creating: pods "redis-7000-" is forbidden: Maximum cpu usage per Pod is 500m.  No limit is specified.
+  容器创建失败,说明容器资源控制必须有limit限制
+8.删除Pod CPU/Mem Max
+  容器创建成功,容器的资源是Col Max值
+  此时,如果增加Col的CPU Max 到1000m,容器创建成功,不受Pod CPu/Mem Max的影响
+9.namesapce limit资源不变,设置pod的资源,如下
+  resources:
+    limits:
+      cpu: "1000m"
+      memory: "1024Mi"
+    requests:
+      cpu: "750m"
+      memory: "768Mi"
+  容器创建失败,说明给namespace限制资源的优先级高于直接给Pod设置资源的优先级

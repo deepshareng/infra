@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-aggregate-day-genurl
+  name: deepstats-aggregate-day-genurl
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-aggregate-day-genurl
+  template:
+    metadata:
+      labels:
+        name: deepstats-aggregate-day-genurl
+    spec:
+      nodeSelector:
+        env: ds-production
+        deepstats: "true"
+      containers:
+      - image: r.fds.so:5000/deepstats:201608120101
+        name: deepstats-aggregate-day-genurl
+        command: ["/go/bin/deepstatsd-aggregate"]
+        args:
+        - -nsqsel
+        - nsqlookupd
+        - -nsqlookupd-http-addr
+        - nsqlookupd.ds-production:4161
+        - -mongo-addr
+        - 10.100.30.61:30061,10.100.30.62:30062,10.100.30.63:30063
+        - -agg-service
+        - day
+        - -channel
+        - deepstats_aggregate_day
+        - -mongocoll
+        - day
+        - -mongodb
+        - deepstats
+        - -topics
+        - genurl
+        - -redis-cluster-node-url
+        - 10.100.1.79:6379
+        resources:
+          requests:
+            memory: "3072Mi"
+            cpu: "2000m"
+          limits:
+            memory: "3072Mi"
+            cpu: "2000m"
+        ports:
+        - containerPort: 16759
+          name: aggregate-day
+          protocol: TCP

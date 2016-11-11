@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: k8s-haproxy
+  name: k8s-haproxy
+  namespace: kube-sys
+spec:
+  ports:
+  - name: ""
+    port: 443
+    protocol: TCP
+    targetPort: 443
+    nodePort: 31443
+  type: NodePort
+  selector:
+    name: k8s-haproxy
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: k8s-haproxy
+  name: k8s-haproxy
+  namespace: kube-sys
+spec:
+  replicas: 1
+  selector:
+    name: k8s-haproxy
+  template:
+    metadata:
+      labels:
+        name: k8s-haproxy
+    spec:
+      nodeSelector:
+        env: kube-sys
+        zone: system
+      containers:
+      - image: r.fds.so:5000/k8s-haproxy:20160511
+        name: k8s-haproxy
+        ports:
+        - containerPort: 443
+          protocol: TCP

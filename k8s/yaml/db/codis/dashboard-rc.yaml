@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: db
+  name: codis-dashboard
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    name: codis-dashboard
+  template:
+    metadata:
+      labels:
+        name: codis-dashboard
+    spec:
+      nodeSelector:
+        env: DB
+      containers:
+      - image: node-00:30500/codis-dashboard
+        name: codis-dashboard
+        ports:
+        - containerPort: 18087
+        resources:
+          limits:
+            cpu: "0.3"
+        volumeMounts:
+        - mountPath: /etc/codis/conf/codis-proxy
+          name: codis-dashboard
+      volumes:
+      - name: codis-dashboard
+        persistentVolumeClaim:
+          claimName: codis-conf
+
+

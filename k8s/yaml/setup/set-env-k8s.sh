@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export AZURE_STORAGE_DNS_SUFFIX=core.chinacloudapi.cn
+export AZURE_STORAGE_ACCOUNT=softrepo
+export AZURE_STORAGE_ACCESS_KEY=0ynxf6GZER0O7rkj9MyQtbaMD+9V882t2Bfhn2DiA06Owwkt8YQ+8p1pOeeCg95a5plMPsT5upLL+80O3zGV4g==

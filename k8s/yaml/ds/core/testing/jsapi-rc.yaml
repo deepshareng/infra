@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-jsapi
+  namespace: ds-test
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-jsapi
+  template:
+    metadata:
+      labels:
+        name: deepshare2-jsapi
+        app: deepshare2-jsapi
+    spec:
+      nodeSelector:
+        env: ds-test
+      containers:
+      - image: r.fds.so:5000/deepshare2-staging:201606140649
+        name: deepshare2-jsapi
+        command: ["/go/bin/deepshare2d"]
+        args: ["-service-types","jsapi","-genurl-base","https://ds.zhutao.xyz","-nsq-url","10.100.114.106:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-appcookie-url","10.100.1.30:16759","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","2000","-token-url","10.100.2.34:16760","-log-level","debug"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16088
+          protocol: TCP

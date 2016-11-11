@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redis-backup
+  name: redis-backup
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    name: redis-backup
+  template:
+    metadata:
+      labels:
+        name: redis-backup
+    spec:
+      nodeSelector:
+        env: DB
+      containers:
+      - image: node-00:30500/redis
+        name: redis-backup
+        command:
+        - /redis-stable/src/redis-server
+        - /redis-conf/redis-backup.conf
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /redis-conf
+          name: redis-conf
+        - mountPath: /redis-master-data
+          name: redis-data
+      volumes:
+      - name: redis-conf
+        persistentVolumeClaim:
+          claimName: redis-init-conf
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-init-dump

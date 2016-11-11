@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ni-nginx
+  namespace: ni-production
+spec:
+  ports:
+  - name: website
+    port: 80
+    targetPort: 80
+    nodePort: 32001
+  - name: https
+    port: 443
+    targetPort: 443
+    nodePort: 32002
+  - name: ela
+    port: 9200
+    targetPort: 9200
+    nodePort: 32003
+  - name: ela-dev
+    port: 9201
+    targetPort: 9201
+    nodePort: 32004
+  type: NodePort
+  selector:
+    name: ni-nginx

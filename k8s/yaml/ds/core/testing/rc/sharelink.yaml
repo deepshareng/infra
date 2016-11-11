@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-sharelink
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-sharelink
+  template:
+    metadata:
+      labels:
+        name: deepshare2-sharelink
+        app: deepshare2-sharelink
+    spec:
+      nodeSelector:
+        deepshare2: "true"
+      containers:
+      - image: r.fds.so:5000/deepshare2-test:201603150252
+        name: deepshare2-sharelink
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepshare2d"]
+        args: ["-service-types","sharelinkfront","-genurl-base","https://t.fds.so","-nsq-url","node-00:4150","-http-listen","0.0.0.0:16759","-match-url","10.100.1.16:16759","-cookie-url","10.100.1.22:16759","-appinfo-url","10.100.1.21:16759","-urlgenerator-url","10.100.1.25:16759","-appcookie-url","10.100.1.30:16759","-redis-cluster-node-urls","10.100.10.79:6379","-redis-pool-size","150","-log-level","info"]
+        ports:
+        - containerPort: 16759
+          hostPort: 16080
+          protocol: TCP

@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: mongo-deepshare2-old
+  name: mongo-deepshare2-old
+  namespace: db
+spec:
+  ports:
+  - name: ""
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  selector:
+    app: mongo-deepshare2-old
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: mongo-deepshare2-old
+  name: mongo-deepshare2-old
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    name: mongo-deepshare2-old
+  template:
+    metadata:
+      labels:
+        app: mongo-deepshare2-old
+        name: mongo-deepshare2-old
+    spec:
+      nodeSelector:
+        env: ds-production
+        mongodb: old-backup
+      containers:
+      - image: r.fds.so:5000/mongo
+        name: mongo-deepshare2
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+          name: mongodb
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongo-data
+      volumes:
+      - hostPath:
+          path: /opt/data/mongo/deepshare2
+        name: mongo-data

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+TIME=$(date +%M%H%d%m%y)
+
+OAUTH_DIR=/data/mongo-dashboard/oauth
+OAUTH_BACKUP_DIR=dashboard_oauth_${TIME}
+OAUTH_BACKUP_TAR=dashboard_oauth_${TIME}.tar.gz
+
+# mongodb backup for db dashboard-oauth
+[ ! -d "$OAUTH_DIR" ] && mkdir -p $OAUTH_DIR
+
+cd $OAUTH_DIR
+
+# data backup
+mongodump -h 10.100.1.117 -d oauth -o $OAUTH_BACKUP_DIR
+
+# tar dir
+tar czf $OAUTH_BACKUP_TAR $OAUTH_BACKUP_DIR
+
+# upload oauth tar to azure storage
+blobxfer prodbackup production-mongo-backup $OAUTH_BACKUP_TAR --upload --pageblob --managementep core.chinacloudapi.cn --endpoint core.chinacloudapi.cn --storageaccountkey PE0fJ1Vpa/IHasMjhpndbL9+2oSJpo/GwgTPw34zTS9/1CyOfUbxbkAi71x942BbK+1VPjbsb3Pp4XSnNgOL0w==
+
+# delete
+rm -rf $OAUTH_BACKUP_TAR $OAUTH_BACKUP_DIR
+

@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-usage
+  name: deepstats-usage
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-usage
+  template:
+    metadata:
+      labels:
+        name: deepstats-usage
+    spec:
+      nodeSelector:
+        env: ds-production
+        deepstats: "true"
+      containers:
+      - image: r.fds.so:5000/deepstats:201607220312
+        name: deepstats-usage
+        command: ["/go/bin/deepstatsd-dsusage"]
+        args:
+        - -nsqsel
+        - nsqlookupd
+        - -nsqlookupd-http-addr
+        - 10.100.104.70:4161
+        - -channel
+        - deepstats_usage
+        - -redis-cluster-node-url
+        - 10.100.1.79:6379
+        resources:
+          requests:
+            memory: "3072Mi"
+            cpu: "2000m"
+          limits:
+            memory: "3072Mi"
+            cpu: "2000m"
+        ports:
+        - containerPort: 16759
+          name: usage
+          protocol: TCP

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare2-snowflake
+  name: deepshare2-snowflake
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepshare2-snowflake
+  template:
+    metadata:
+      labels:
+        name: deepshare2-snowflake
+        app: deepshare2-snowflake
+    spec:
+      nodeSelector:
+        env: ds-staging
+        snowflake: "true"
+      containers:
+      - image: r.fds.so:5000/deepshare-snowflake:20160505
+        name: ds2snowflake
+        command: ["/go/src/github.com/MISingularity/deepshare2/deepshare2d"]
+        args: ["-service-types","token","-http-listen","0.0.0.0:16760","-nsq-url","nsqd.ds-production:4150","-data-center-id","0","-worker-id","1","-log-level","debug"]
+        ports:
+        - containerPort: 16760
+          name: ds2snowflake
+          protocol: TCP

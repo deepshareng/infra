@@ -1,0 +1,13 @@
+FROM r.fds.so:5000/backup2
+
+RUN apt-get install -y mongodb rsyslog
+ADD ./startcron.sh /opt/startcron.sh
+ADD ./redis-backup.sh /opt/redis-backup.sh
+ADD ./mongo-backup.sh /opt/mongo-backup.sh
+ADD ./new-node.pem /opt/new-node.pem
+RUN chmod 0600 /opt/new-node.pem
+RUN chmod +x /opt/start-cron.sh
+ADD ./crontab /etc/crontab
+RUN chmod 644 /etc/crontab
+RUN touch /etc/crontab /etc/cron.*/*
+CMD /opt/startcron.sh

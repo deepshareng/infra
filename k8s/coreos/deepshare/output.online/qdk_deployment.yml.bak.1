@@ -1,0 +1,258 @@
+name: qdk
+resources:
+  vnet:
+    name: vnet-multi-master-kubernetes
+    location: China North
+    address_space: 172.18.0.0
+    cidr: 12
+    subnet:
+      - name: cluster
+        start_ip: 172.18.0.0
+        cidr: 17
+      - name: data
+        start_ip: 172.16.0.0
+        cidr: 24
+      - name: z1
+        start_ip: 172.16.1.0
+        cidr: 24
+      - name: z2
+        start_ip: 172.16.2.0
+        cidr: 24
+      - name: z3
+        start_ip: 172.16.3.0
+        cidr: 24
+      - name: z4
+        start_ip: 172.16.4.0
+        cidr: 24
+      - name: z5
+        start_ip: 172.16.5.0
+        cidr: 24
+  conf_file: ./output/qdk_ssh_conf
+  deployment_file: ./output/qdk_deployment.yml
+  ssh_key:
+    key: ./output/kqdk1.2_ssh.key
+    pem: ./output/kqdk1.2_ssh.pem
+services:
+  - name: qdk-m1
+    subnet: cluster
+    nodes:
+      master: 5
+      node: 0
+    hosts:
+      - name: qdk-m1-master-00
+        port: 2201
+        ip: 172.18.0.4
+        cloud_config_file: ./output/master_84431ae9a712f8_generated.yml
+      - name: qdk-m1-master-01
+        port: 2202
+        cloud_config_file: ./output/master_6b54d0c73c1320_generated.yml
+      - name: qdk-m1-master-02
+        port: 2203
+        cloud_config_file: ./output/master_30f17d5165c5bf_generated.yml
+      - name: qdk-m1-master-03
+        port: 2204
+        cloud_config_file: ./output/master_14896980809b2e_generated.yml
+      - name: qdk-m1-master-04
+        port: 2205
+        cloud_config_file: ./output/master_1944fd5576977e_generated.yml
+  - name: qdk-d1
+    subnet: data
+    nodes:
+      master: 0
+      node: 0
+    hosts: []
+  - name: qdk-z1
+    subnet: z1
+    nodes:
+      master: 0
+      node: 34
+    hosts:
+      - name: qdk-z1-node-00
+        port: 2201
+        cloud_config_file: ./output/node_aacfc830ba52ed_generated.yml
+      - name: qdk-z1-node-01
+        port: 2202
+        cloud_config_file: ./output/node_4be1b434fd348d_generated.yml
+      - name: qdk-z1-node-02
+        port: 2203
+        cloud_config_file: ./output/node_4be1b434fd348d_generated.yml
+      - name: qdk-z1-node-03
+        port: 2204
+        cloud_config_file: ./output/node_4be1b434fd348d_generated.yml
+      - name: qdk-z1-node-04
+        port: 2205
+        cloud_config_file: ./output/node_13c99084ff8695_generated.yml
+      - name: qdk-z1-node-05
+        port: 2206
+        cloud_config_file: ./output/node_13c99084ff8695_generated.yml
+      - name: qdk-z1-node-06
+        port: 2207
+        cloud_config_file: ./output/node_13c99084ff8695_generated.yml
+      - name: qdk-z1-node-07
+        port: 2208
+        cloud_config_file: ./output/node_13c99084ff8695_generated.yml
+      - name: qdk-z1-node-08
+        port: 2209
+        cloud_config_file: ./output/node_86ce07eb9670d6_generated.yml
+      - name: qdk-z1-node-09
+        port: 2210
+        cloud_config_file: ./output/node_86ce07eb9670d6_generated.yml
+      - name: qdk-z1-node-10
+        port: 2211
+        cloud_config_file: ./output/node_1bba563b0a3784_generated.yml
+      - name: qdk-z1-node-11
+        port: 2212
+        cloud_config_file: ./output/node_1bba563b0a3784_generated.yml
+      - name: qdk-z1-node-12
+        port: 2213
+        cloud_config_file: ./output/node_1bba563b0a3784_generated.yml
+      - name: qdk-z1-node-13
+        port: 2214
+        cloud_config_file: ./output/node_1bba563b0a3784_generated.yml
+      - name: qdk-z1-node-14
+        port: 2215
+        cloud_config_file: ./output/node_1bba563b0a3784_generated.yml
+      - name: qdk-z1-node-15
+        port: 2216
+        cloud_config_file: ./output/node_1bba563b0a3784_generated.yml
+      - name: qdk-z1-node-16
+        port: 2217
+        cloud_config_file: ./output/node_62326d1c46cded_generated.yml
+      - name: qdk-z1-node-17
+        port: 2218
+        cloud_config_file: ./output/node_d1815e3ed4aa09_generated.yml
+      - name: qdk-z1-node-18
+        port: 2219
+        cloud_config_file: ./output/node_d1815e3ed4aa09_generated.yml
+      - name: qdk-z1-node-19
+        port: 2220
+        cloud_config_file: ./output/node_cb54fefd7ad2ab_generated.yml
+      - name: qdk-z1-node-20
+        port: 2221
+        cloud_config_file: ./output/node_cb54fefd7ad2ab_generated.yml
+      - name: qdk-z1-node-21
+        port: 2222
+        cloud_config_file: ./output/node_cb54fefd7ad2ab_generated.yml
+      - name: qdk-z1-node-22
+        port: 2223
+        cloud_config_file: ./output/node_cb54fefd7ad2ab_generated.yml
+      - name: qdk-z1-node-23
+        port: 2224
+        cloud_config_file: ./output/node_cb54fefd7ad2ab_generated.yml
+      - name: qdk-z1-node-24
+        port: 2225
+        cloud_config_file: ./output/node_cb54fefd7ad2ab_generated.yml
+      - name: qdk-z1-node-25
+        port: 2226
+        cloud_config_file: ./output/node_2b14d1cab82bd8_generated.yml
+      - name: qdk-z1-node-26
+        port: 2227
+        cloud_config_file: ./output/node_2b14d1cab82bd8_generated.yml
+      - name: qdk-z1-node-27
+        port: 2228
+        cloud_config_file: ./output/node_2b14d1cab82bd8_generated.yml
+      - name: qdk-z1-node-28
+        port: 2229
+        cloud_config_file: ./output/node_4018f6ea2a5022_generated.yml
+      - name: qdk-z1-node-29
+        port: 2230
+        cloud_config_file: ./output/node_4018f6ea2a5022_generated.yml
+      - name: qdk-z1-node-30
+        port: 2231
+        cloud_config_file: ./output/node_55f6ccdbac69fc_generated.yml
+      - name: qdk-z1-node-31
+        port: 2232
+        cloud_config_file: ./output/node_8eb29bbb830b37_generated.yml
+      - name: qdk-z1-node-32
+        port: 2233
+        cloud_config_file: ./output/node_8eb29bbb830b37_generated.yml
+      - name: qdk-z1-node-33
+        port: 2234
+        cloud_config_file: ./output/node_8eb29bbb830b37_generated.yml
+  - name: qdk-z2
+    subnet: z2
+    nodes:
+      master: 0
+      node: 7
+    hosts:
+      - name: qdk-z2-node-00
+        port: 2201
+        cloud_config_file: ./output/node_8b56c488943196_generated.yml
+      - name: qdk-z2-node-01
+        port: 2202
+        cloud_config_file: ./output/node_8b56c488943196_generated.yml
+      - name: qdk-z2-node-02
+        port: 2203
+        cloud_config_file: ./output/node_8b56c488943196_generated.yml
+      - name: qdk-z2-node-03
+        port: 2204
+        cloud_config_file: ./output/node_8b56c488943196_generated.yml
+      - name: qdk-z2-node-04
+        port: 2205
+        cloud_config_file: ./output/node_15c3d1a1c36285_generated.yml
+      - name: qdk-z2-node-05
+        port: 2206
+        cloud_config_file: ./output/node_15c3d1a1c36285_generated.yml
+      - name: qdk-z2-node-06
+        port: 2207
+        cloud_config_file: ./output/node_4ce351e380c5a9_generated.yml
+  - name: qdk-z3
+    subnet: z3
+    nodes:
+      master: 0
+      node: 10
+    hosts:
+      - name: qdk-z3-node-00
+        port: 2201
+        cloud_config_file: ./output/node_154f88d4f346a5_generated.yml
+      - name: qdk-z3-node-01
+        port: 2202
+        cloud_config_file: ./output/node_154f88d4f346a5_generated.yml
+      - name: qdk-z3-node-02
+        port: 2203
+        cloud_config_file: ./output/node_154f88d4f346a5_generated.yml
+      - name: qdk-z3-node-03
+        port: 2204
+        cloud_config_file: ./output/node_154f88d4f346a5_generated.yml
+      - name: qdk-z3-node-04
+        port: 2205
+        cloud_config_file: ./output/node_965b16430c657c_generated.yml
+      - name: qdk-z3-node-05
+        port: 2206
+        cloud_config_file: ./output/node_7088a929409b57_generated.yml
+      - name: qdk-z3-node-06
+        port: 2207
+        cloud_config_file: ./output/node_7088a929409b57_generated.yml
+      - name: qdk-z3-node-07
+        port: 2208
+        cloud_config_file: ./output/node_fcef85d6c439db_generated.yml
+      - name: qdk-z3-node-08
+        port: 2209
+        cloud_config_file: ./output/node_fcef85d6c439db_generated.yml
+      - name: qdk-z3-node-09
+        port: 2210
+        cloud_config_file: ./output/node_fcef85d6c439db_generated.yml
+  - name: qdk-z4
+    subnet: z4
+    nodes:
+      master: 0
+      node: 3
+    hosts:
+      - name: qdk-z4-node-00
+        port: 2201
+        cloud_config_file: ./output/node_8bdd96e933bbd9_generated.yml
+      - name: qdk-z4-node-01
+        port: 2202
+        cloud_config_file: ./output/node_8bdd96e933bbd9_generated.yml
+      - name: qdk-z4-node-02
+        port: 2203
+        cloud_config_file: ./output/node_8bdd96e933bbd9_generated.yml
+  - name: qdk-z5
+    subnet: z5
+    nodes:
+      master: 0
+      node: 0
+    hosts: []
+resizing: true
+old_size: 31
+old_state_file: ./output/qdk_deployment.yml

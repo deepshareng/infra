@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: prometheus-redis
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    name: prometheus-redis-exporter
+  template:
+    metadata:
+      labels:
+        name: prometheus-redis-exporter
+    spec:
+      nodeSelector:
+        env: monitoring
+      containers:
+      - image: r.fds.so:5000/redis-exporter:v1
+        name: redis-exporter
+        command:
+          - "/bin/redis_exporter"
+        args: ["-redis.addr","10.100.10.79:6379,10.100.1.79:6379"]
+        ports:
+        - containerPort: 9121
+          hostPort: 9121
+          protocol: TCP
+
+
+

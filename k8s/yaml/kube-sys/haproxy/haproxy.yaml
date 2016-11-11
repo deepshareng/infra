@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: ss-haproxy
+  name: ss-haproxy
+  namespace: kube-sys
+spec:
+  ports:
+  - name: ""
+    port: 8123
+    protocol: TCP
+    targetPort: 8123
+    nodePort: 31123
+  type: NodePort
+  selector:
+    name: ss-haproxy
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: ss-haproxy
+  name: ss-haproxy
+  namespace: kube-sys
+spec:
+  replicas: 1
+  selector:
+    name: ss-haproxy
+  template:
+    metadata:
+      labels:
+        name: ss-haproxy
+    spec:
+      nodeSelector:
+        env: kube-sys
+      containers:
+      - image: r.fds.so:5000/ss-haproxy:1.6.4
+        name: ss-haproxy
+        ports:
+        - containerPort: 8123
+          protocol: TCP

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepshare-website
+  name: deepshare-website
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepshare-website
+  template:
+    metadata:
+      labels:
+        name: deepshare-website
+    spec:
+      nodeSelector:
+        env: ds-staging
+        website: "true"
+      containers:
+      - image: r.fds.so:5000/jekyll:1
+        name: deepshare-website
+        command:
+        - jekyll
+        - s
+        - --source
+        - /srv/jekyll/deepshare_website/
+        - --destination
+        - /srv/jekyll/deepshare_website/_site/
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "900m"
+          limits:
+            memory: "2048Mi"
+            cpu: "900m"
+        ports:
+        - containerPort: 4000
+          hostPort: 4000
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /srv/jekyll
+          name: content
+      volumes:
+      - name: content
+        hostPath:
+          path: /opt/data/deepshare_website-staging

@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: cert-ds-production
+  labels:
+    name: cert-ds-production
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadOnlyMany
+  nfs:
+    path: "/cert"
+    server: 10.100.0.98
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: cert
+  namespace: ds-production
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Mi

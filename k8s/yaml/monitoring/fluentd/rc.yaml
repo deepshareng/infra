@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: fluentd-elasticsearch
+  namespace: monitoring
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: fluentd-elasticsearch
+    spec:
+      nodeSelector:
+        fluentd: "true"
+      containers:
+      - name: fluentd-elasticsearch
+        image: r.fds.so:5000/fluentd-kubernetes:v1.14
+        env:
+        - name: KUBERNETES_CA_CERTIFICATE_FILE
+          value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - name: ELASTICSEARCH_HOST
+          value: elasticsearch-logging.monitoring
+        - name: KUBERNETES_PORT_443_TCP_ADDR
+          value: 172.18.0.5
+        - name: KUBERNETES_SERVICE_HOST
+          value: 172.18.0.5
+        ports:
+        - containerPort: 6666
+          hostPort: 16666
+          name: transport
+          protocol: TCP
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: containers
+          mountPath: /var/lib/docker/containers
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: containers
+        hostPath:
+          path: /var/lib/docker/containers

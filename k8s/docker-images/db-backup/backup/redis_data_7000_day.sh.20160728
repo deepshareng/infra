@@ -1,0 +1,28 @@
+#!/bin/bash
+
+TIME=$(date +%M%H%d%m%y)
+
+REDIS_DIR=/data/redis-backup/redis-data
+REDIS_BACKUP_DIR=redis-data-7000-${TIME}
+REDIS_BACKUP_TAR=redis-data-7000-${TIME}.tar.gz
+
+# redis backup for redis-data-7000
+[ ! -d "$REDIS_DIR" ] && mkdir -p $REDIS_DIR
+
+cd $REDIS_DIR
+
+# mkdir dir
+mkdir -p $REDIS_BACKUP_DIR
+
+# data backup
+scp -i /opt/new-node.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@172.16.0.16:/var/lib/docker/redis-data-7000/* $REDIS_BACKUP_DIR
+
+# tar dir
+tar czf $REDIS_BACKUP_TAR $REDIS_BACKUP_DIR
+
+# upload redis-data-7000  tar to azure storage
+blobxfer prodbackup production-redis-backup $REDIS_BACKUP_TAR --upload --managementep core.chinacloudapi.cn --endpoint core.chinacloudapi.cn --storageaccountkey PE0fJ1Vpa/IHasMjhpndbL9+2oSJpo/GwgTPw34zTS9/1CyOfUbxbkAi71x942BbK+1VPjbsb3Pp4XSnNgOL0w==
+
+# delete
+rm -rf $REDIS_BACKUP_TAR $REDIS_BACKUP_DIR
+

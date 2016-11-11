@@ -1,0 +1,64 @@
+version: 0.1
+log:
+  level: debug
+  fields:
+    service: registry
+    environment: development
+  hooks:
+    - type: mail
+      disabled: true
+      levels:
+        - panic
+      options:
+        smtp:
+          addr: mail.example.com:25
+          username: mailuser
+          password: password
+          insecure: true
+        from: sender@example.com
+        to:
+          - errors@example.com
+storage:
+    azure:
+        accountname: softrepo
+        accountkey: 0ynxf6GZER0O7rkj9MyQtbaMD+9V882t2Bfhn2DiA06Owwkt8YQ+8p1pOeeCg95a5plMPsT5upLL+80O3zGV4g==
+        container: dockerimages
+        realm: core.chinacloudapi.cn
+http:
+    addr: :5000
+    secret: laima
+    debug:
+        addr: localhost:5001
+    tls:
+        certificate: /certs/fds.so.crt
+        key: /certs/fds.so.key
+redis:
+  addr: localhost:6379
+  pool:
+    maxidle: 16
+    maxactive: 64
+    idletimeout: 300s
+  dialtimeout: 10ms
+  readtimeout: 10ms
+  writetimeout: 10ms
+notifications:
+    endpoints:
+        - name: local-5003
+          url: http://localhost:5003/callback
+          headers:
+             Authorization: [Bearer <an example token>]
+          timeout: 1s
+          threshold: 10
+          backoff: 1s
+          disabled: true
+        - name: local-8083
+          url: http://localhost:8083/callback
+          timeout: 1s
+          threshold: 10
+          backoff: 1s
+          disabled: true 
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3

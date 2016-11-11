@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-appchannel
+  name: deepstats-appchannel
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-appchannel
+  template:
+    metadata:
+      labels:
+        name: deepstats-appchannel
+    spec:
+      nodeSelector:
+        env: ds-production
+        deepstats: "true"
+      containers:
+      - image: r.fds.so:5000/deepstats:201607220312
+        name: deepstats-appchannel
+        command: ["/go/bin/deepstatsd-appchannel"]
+        args: ["-nsqsel","nsqlookupd","-nsqlookupd-http-addr","10.100.104.70:4161","-mongo-addr","10.100.30.61:30061,10.100.30.62:30062,10.100.30.63:30063","-channel","deepstats_appchannel","-mongodb","deepstats","-mongocoll","appchannel","-topics","counter,match,sharelink,dsaction,genurl,inappdata"]
+        ports:
+        - containerPort: 16759
+          name: appchannel
+          protocol: TCP

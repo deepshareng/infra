@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ni-nginx
+  namespace: ni-production
+spec:
+  replicas: 1
+  selector:
+    name: ni-nginx
+  template:
+    metadata:
+      labels:
+        name: ni-nginx
+    spec:
+      nodeSelector:
+        env: ni-production
+      containers:
+      - image: r.fds.so:5000/ni-nginx:20160520
+        name: ni-nginx

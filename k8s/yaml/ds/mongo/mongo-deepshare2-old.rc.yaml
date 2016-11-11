@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  creationTimestamp: 2016-05-23T03:25:01Z
+  labels:
+    name: mongo-deepshare2-old
+  name: mongo-deepshare2-old
+  namespace: db
+  resourceVersion: "139697802"
+  selfLink: /api/v1/namespaces/db/replicationcontrollers/mongo-deepshare2-old
+  uid: ef08f132-2095-11e6-b29a-0017fa0014a7
+spec:
+  replicas: 1
+  selector:
+    name: mongo-deepshare2-old
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mongo-deepshare2-old
+        name: mongo-deepshare2-old
+    spec:
+      containers:
+      - image: r.fds.so:5000/mongo
+        imagePullPolicy: IfNotPresent
+        name: mongo-deepshare2
+        ports:
+        - containerPort: 27017
+          name: mongodb
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongo-data
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        env: ds-production
+        mongodb: old-backup
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /mnt/resource/mongo/deepshare2
+        name: mongo-data
+status:
+  replicas: 1

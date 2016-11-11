@@ -1,0 +1,102 @@
+{
+    "apiVersion": "v1",
+    "kind": "ReplicationController",
+    "metadata": {
+        "labels": {
+            "name": "kube-prometheus"
+        },
+        "name": "kube-prometheus",
+	"namespace": "monitoring"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "name": "kube-prometheus"
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "name": "kube-prometheus"
+                }
+            },
+            "spec": {
+               "nodeSelector": { 
+		  "env": "monitoring",
+                  "prometheus": "true"
+		},
+                "containers": [
+                    {
+                        "image": "r.fds.so:5000/prometheus:0.17.0",
+                        "name": "kube-prometheus",
+                        "args": [
+                            "-config.file=/var/prometheus/prometheus.yml",
+                            "-storage.local.dirty=true",
+                            "-storage.local.path=/var/prometheus/promthdata",
+                            "-alertmanager.url=http://10.100.48.90:9093"
+                        ],
+                        "ports": [
+                            {
+                                "containerPort": 9090,
+                                "hostPort": 9090,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/prometheus/",
+                                "name": "prometheus"
+                            }
+                        ]
+                    },
+                    {
+                        "image": "r.fds.so:5000/prompush:0.2.0",
+                        "name": "pushgateway",
+                        "args": [
+                           "-persistence.file=/mnt/pushgateway/pushgateway.txt"
+                        ],
+                        "ports": [
+                            {
+                                "containerPort": 9091,
+                                "hostPort": 9091,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/mnt/",
+                                "name": "prometheus"
+                            }
+                        ]
+                    },
+                    {
+                        "image": "r.fds.so:5000/kubectl:prometheus",
+                        "name": "kubectl",
+                        "args": [
+                            "proxy",
+                            "-p",
+                            "8001",
+                            "--api-prefix=/"
+                        ],
+			"ports": [
+                            {
+                                "containerPort": 8001,
+                                "hostPort": 8001,
+                                "protocol": "TCP"
+                            }
+                        ]
+                     }
+                ],
+                "volumes": [
+                    {
+                        "hostPath": {
+                            "path": "/mnt/data/prometheus"
+                        },
+                        "name": "prometheus"
+                    }
+                ]
+            }
+        }
+    }
+}
+
+

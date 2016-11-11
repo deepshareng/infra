@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: collect-ua
+  name: collect-ua
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: collect-ua
+  template:
+    metadata:
+      labels:
+        name: collect-ua
+        app: collect-ua
+    spec:
+      nodeSelector:
+        env: ds-production
+      containers:
+      - image: node-00:30500/deepshare2-collectua:201601141
+        name: collect-ua
+        command: ["/go/src/github.com/MISingularity/deepshare2/collectua"]
+        args: ["-mongo-url","10.100.1.117:27017"]
+        ports:
+        - containerPort: 8080
+          hostPort: 8080
+          name: collect-ua
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /tmp/files
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /mnt/resource
+

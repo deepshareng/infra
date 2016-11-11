@@ -1,0 +1,172 @@
+#cloud-config
+write-files:
+  - path: /etc/conf.d/nfs
+    permissions: '0644'
+    content: |
+      OPTS_RPC_MOUNTD=""
+  - path: /opt/bin/.noupdate
+    permissions: '0644'
+    content: |
+      # do not update OS if this file exist
+  - path: /opt/bin/.noapiserver
+    permissions: '0644'
+    content: |
+      # do not do not boot up Apiserver, Controller Manager and Scheduler
+  - path: /opt/bin/wupiao
+    permissions: '0755'
+    content: "#!/bin/bash\n# [w]ait [u]ntil [p]ort [i]s [a]ctually [o]pen\n[ -n \"$1\" ] && \\\n  until curl -o /dev/null -sIf http://${1}; do \\\n    sleep 1 && echo .;\n  done;\nexit $?\n"
+coreos:
+  fleet:
+    metadata: role=master
+  units:
+    - name: update-engine.service
+      command: start
+      content: |
+        [Unit]
+        Description=Update Engine
+        ConditionVirtualization=!container
+        ConditionPathExists=!/opt/bin/.noupdate
+
+        [Service]
+        Type=dbus
+        BusName=com.coreos.update1
+        ExecStart=/usr/sbin/update_engine -foreground -logtostderr
+        BlockIOWeight=100
+        Restart=always
+        RestartSec=30
+
+        [Install]
+        WantedBy=default.target
+    - name: etcd2.service
+      command: start
+      drop-ins:
+        - name: 50-cluster-setting.conf
+          content: >
+            [Service]
+
+            Environment=ETCD_DISCOVERY_SRV=fds.so
+
+            Environment=ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:2379
+
+            Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2380
+
+            Environment=ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:2379,http://127.0.0.1:2379
+
+            Environment=ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2380,http://127.0.0.1:2380
+
+            Environment=ETCD_CLUSTER_TOKEN=k8s_etcd
+
+            Environment=ETCD_INITIAL_CLUSTER_STATE=new
+
+            Environment=ETCD_NAME=%H
+    - name: early-docker.service
+      command: start
+      content: >
+        [Unit]
+
+        Description=Early Docker Application Container Engine
+
+        Documentation=http://docs.docker.com
+
+        After=early-docker.socket
+
+        Requires=early-docker.socket
+
+
+
+        [Service]
+
+        Environment=TMPDIR=/var/tmp
+
+        MountFlags=slave
+
+        LimitNOFILE=1048576
+
+        LimitNPROC=1048576
+
+        ExecStart=/usr/lib/coreos/dockerd --daemon --host=fd:// --bridge=none
+        --iptables=false --ip-masq=false --graph=/var/lib/early-docker
+        --pidfile=/var/run/early-docker.pid
+
+
+
+        [Install]
+
+        WantedBy=early-docker.target
+    - name: flanneld.service
+      command: start
+      content: "[Unit]\nDescription=Network fabric for containers\nDocumentation=https://github.com/coreos/flannel\nRequires=early-docker.service\nAfter=etcd.service etcd2.service early-docker.service\nBefore=early-docker.target\n\n[Service]\nType=notify\nRestart=always\nRestartSec=5\nEnvironment=\"TMPDIR=/var/tmp/\"\nEnvironment=\"DOCKER_HOST=unix:///var/run/early-docker.sock\"\nEnvironment=\"FLANNEL_VER=0.5.2\"\nEnvironment=\"ETCD_SSL_DIR=/etc/ssl/etcd\"\nLimitNOFILE=1048576\nLimitNPROC=1048576\nExecStartPre=/sbin/modprobe ip_tables\nExecStartPre=/usr/bin/mkdir -p /run/flannel\nExecStartPre=/usr/bin/mkdir -p ${ETCD_SSL_DIR}\nExecStartPre=/usr/bin/touch /run/flannel/options.env\nExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{\"Network\":\"10.244.0.0/16\", \"Backend\": {\"Type\": \"vxlan\"}}'\n\nExecStart=/usr/libexec/sdnotify-proxy /run/flannel/sd.sock \\\n  /usr/bin/docker run --net=host --privileged=true --rm \\\n  --volume=/run/flannel:/run/flannel \\\n  --env=NOTIFY_SOCKET=/run/flannel/sd.sock \\\n  --env-file=/run/flannel/options.env \\\n  --volume=/usr/share/ca-certificates:/etc/ssl/certs:ro \\\n  --volume=${ETCD_SSL_DIR}:/etc/ssl/etcd:ro \\\n  r.fds.so:5000/flannel:${FLANNEL_VER} /opt/bin/flanneld --ip-masq=true\n\nExecStartPost=/usr/bin/docker run --net=host --rm -v /run:/run \\\n  r.fds.so:5000/flannel:${FLANNEL_VER} \\\n  /opt/bin/mk-docker-opts.sh -d /run/flannel_docker_opts.env -i\n"
+    - name: docker.service
+      command: start
+      content: >
+        [Unit]
+
+        Description=Docker Application Container Engine
+
+        Documentation=http://docs.docker.com
+
+        After=docker.socket early-docker.target network.target flanneld.service
+
+        Requires=docker.socket early-docker.target flanneld.service
+
+
+
+        [Service]
+
+        EnvironmentFile=-/run/flannel_docker_opts.env
+
+        # Environment='DOCKER_OPTS=--insecure-registry node-00:30500
+        --insecure-registry node-01:30500 --insecure-registry r.fds.so:5000'
+
+        MountFlags=slave
+
+        LimitNOFILE=1048576
+
+        LimitNPROC=1048576
+
+        ExecStart=/usr/lib/coreos/dockerd --daemon --host=fd:// $DOCKER_OPTS
+        $DOCKER_OPT_BIP $DOCKER_OPT_MTU $DOCKER_OPT_IPMASQ
+
+
+
+        [Install]
+
+        WantedBy=multi-user.target
+    - name: setup-network-environment.service
+      command: start
+      content: >
+        [Unit]
+
+        Description=Setup Network Environment
+
+        Documentation=https://github.com/kelseyhightower/setup-network-environment
+
+        Requires=network-online.target
+
+        After=network-online.target
+
+
+
+        [Service]
+
+        ExecStartPre=-/usr/bin/mkdir -p /opt/bin
+
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/setup-network-environment -z
+        /opt/bin/setup-network-environment
+        https://softrepo.blob.core.chinacloudapi.cn/platform/setup-network-environment
+
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/setup-network-environment
+
+        ExecStart=/opt/bin/setup-network-environment
+
+        RemainAfterExit=yes
+
+        Type=oneshot
+    - name: fleet.service
+      command: start
+    - name: kubelet.service
+      command: start
+      content: "[Service]\nExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests\nExecStartPre=-/usr/bin/mkdir -p /opt/bin\nExecStartPre=/usr/bin/curl -L -o /opt/bin/ca.pem -z /opt/bin/ca.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/ca.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/apiserver-key.pem -z /opt/bin/apiserver-key.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/apiserver-key.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/apiserver.pem -z /opt/bin/apiserver.pem https://deepshare2.blob.core.chinacloudapi.cn/keys/apiserver.pem\nExecStartPre=/usr/bin/curl -L -o /opt/bin/kubelet -z /opt/bin/kubelet https://softrepo.blob.core.chinacloudapi.cn/k8s1-2/kubelet\nExecStartPre=/usr/bin/chmod +x /opt/bin/kubelet\nExecStartPre=/usr/bin/curl -L -o /opt/bin/kubectl -z /opt/bin/kubectl https://softrepo.blob.core.chinacloudapi.cn/k8s1-2/kubectl\nExecStartPre=/usr/bin/chmod +x /opt/bin/kubectl\nExecStartPre=/usr/bin/curl -L -o /etc/kubernetes/manifests/kube-apiserver.manifest -z /etc/kubernetes/manifests/kube-apiserver.manifest https://softrepo.blob.core.chinacloudapi.cn/k8s1-2/kube-apiserver.manifest\nExecStartPre=/usr/bin/chmod 755 /etc/kubernetes/manifests/kube-apiserver.manifest\nExecStartPre=/usr/bin/curl -L -o /etc/kubernetes/manifests/kube-proxy.manifest -z /etc/kubernetes/manifests/kube-proxy.manifest https://softrepo.blob.core.chinacloudapi.cn/k8s1-2/kube-proxy.manifest\nExecStartPre=/usr/bin/chmod 755 /etc/kubernetes/manifests/kube-proxy.manifest\nExecStartPre=/usr/bin/curl -L -o /etc/kubernetes/manifests/kube-scheduler.manifest -z /etc/kubernetes/manifests/kube-scheduler.manifest https://softrepo.blob.core.chinacloudapi.cn/k8s1-2/kube-scheduler.manifest\nExecStartPre=/usr/bin/chmod 755 /etc/kubernetes/manifests/kube-scheduler.manifest\nExecStartPre=/usr/bin/curl -L -o /etc/kubernetes/manifests/kube-controller-manager.manifest -z /etc/kubernetes/manifests/kube-controller-manager.manifest https://softrepo.blob.core.chinacloudapi.cn/k8s1-2/kube-controller-manager.manifest\nExecStartPre=/usr/bin/chmod 755 /etc/kubernetes/manifests/kube-controller-manager.manifest\nExecStartPre=/opt/bin/wupiao 127.0.0.1:2379/v2/machines\nEnvironment=KUBELET_VERSION=1.2\nExecStart=/opt/bin/kubelet \\\n  --api-servers=http://127.0.0.1:8080 \\\n  --register-schedulable=false \\\n  --allow-privileged=true \\\n  --config=/etc/kubernetes/manifests \\\n  --hostname-override=$private_ipv4 \\\n  --pod-infra-container-image=r.fds.so:5000/pause:2.0 \\\n  --cluster-dns=10.100.0.53 \\\n  --cluster-domain=cluster.local\nRestart=always\nRestartSec=10\n\n[Install]\nWantedBy=multi-user.target\n"
+  update:
+    group: stable
+    reboot-strategy: 'off'

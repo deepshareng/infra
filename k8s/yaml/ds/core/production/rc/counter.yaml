@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deepshare2-counter
+  namespace: ds-production
+spec:
+  replicas: 5
+  selector:
+    name: deepshare2-counter
+  template:
+    metadata:
+      labels:
+        name: deepshare2-counter
+        app: deepshare2-counter
+    spec:
+      nodeSelector:
+        env: ds-production
+        core: "true"
+      containers:
+      - image: r.fds.so:5000/deepshare2:201608040911
+        name: deepshare2-counter
+        command: ["/go/bin/deepshare2d"]
+        args:
+        - -service-types
+        - counter
+        - -genurl-base
+        - https://fds.so
+        - -nsq-url
+        - nsqd.ds-production:4150
+        - -http-listen
+        - 0.0.0.0:16759
+        - -match-url
+        - 10.100.1.16:16759
+        - -cookie-url
+        - 10.100.1.22:16759
+        - -appinfo-url
+        - 10.100.1.21:16759
+        - -urlgenerator-url
+        - 10.100.1.25:16759
+        - -appcookie-url
+        - 10.100.1.30:16759
+        - -redis-cluster-node-url
+        - 10.100.10.11:7001,10.100.10.12:7002,10.100.10.13:7003,10.100.10.14:7004,10.100.10.15:7005,10.100.10.16:7006
+        - -redis-pool-size
+        - "2000"
+        - -log-level
+        - info
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "800m"
+          limits:
+            memory: "1024Mi"
+            cpu: "800m"
+        ports:
+        - containerPort: 16759
+          hostPort: 16083
+          protocol: TCP

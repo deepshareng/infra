@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: redis-6383
+  name: redis-6383
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    name: redis-6383
+  template:
+    metadata:
+      labels:
+        redis: deepshare2
+        name: redis-6383
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        redis: "true"
+        redis-init: "true"
+      containers:
+      - name: redis-6383
+        image: r.fds.so:5000/redis:3.0.6
+        command:
+        - redis-server
+        - --port 7003
+        - --appendonly yes
+        - --slaveof 10.244.57.30 6379
+        ports:
+        - containerPort: 7003
+          hostPort: 7003
+        - containerPort: 17003
+          hostPort: 17003
+        resources:
+          limits:
+            cpu: "0.3"
+        volumeMounts:
+        - mountPath: /data
+          name: data-6383
+      volumes:
+      - name: data-6383
+        hostPath:
+          path: /mnt/resource/redis-data-6383

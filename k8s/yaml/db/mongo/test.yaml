@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: mongo-deepshare2
+  name: mongo-deepshare2
+  namespace: db
+spec:
+  ports:
+  - name: "mongo-deepshare2"
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  clusterIP: 10.100.10.91
+  selector:
+    app: mongo-deepshare2

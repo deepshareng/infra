@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: dd-task
+  name: dd-task
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: dd-task
+  template:
+    metadata:
+      labels:
+        name: dd-task
+        app: dd-task
+    spec:
+      nodeSelector:
+        env: ds-production
+      containers:
+      - image: r.fds.so:5000/deepdash-task:201607250326
+        name: dd-task
+        command: ["/go/src/github.com/MISingularity/deepdash/task"]
+        args: 
+        - -mongo-addr
+        - 10.100.30.61:30061,10.100.30.62:30062,10.100.30.63:30063
+        - -deepstats-addr
+        - http://10.100.1.14:10002
+        - -appinfo-addr
+        - http://10.100.1.21:16759
+        - -auth-addr
+        - http://10.100.1.31:10032
+        - -client-id
+        - deepdash-production
+        - -client-secret
+        - $de@!12sdfsxow
+        - -redirecturi
+        - http://10.100.1.13:10033/auth/code
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "900m"
+          limits:
+            memory: "1024Mi"
+            cpu: "900m"
+        env:
+          - name: DEBUG
+            value: "false"
+        volumeMounts:
+        - name: data
+          mountPath: /go/src/github.com/MISingularity/deepdash/cert
+        - name: app-site
+          mountPath: /go/src/github.com/MISingularity/deepdash/app_site
+        ports:
+        - containerPort: 10033
+          name: dd-task
+          protocol: TCP
+      volumes:
+      - name: data
+        hostPath:
+          path: /opt/data/ds/cert
+      - name: app-site
+        hostPath:
+          path: /opt/data/ds/apple-app-site

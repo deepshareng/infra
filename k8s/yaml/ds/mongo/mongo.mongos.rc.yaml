@@ -1,0 +1,201 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-mongos-30061
+  namespace: ds-db
+  labels:
+    name: mongo-mongos-30061
+spec:
+  ports:
+  - name: mongo-mongos-30061
+    port: 30061
+    protocol: TCP
+    targetPort: 30061
+  clusterIP: 10.100.30.61
+  selector:
+    app: mongo-mongos-30061
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-mongos-30062
+  namespace: ds-db
+  labels:
+    name: mongo-mongos-30062
+spec:
+  ports:
+  - name: mongo-mongos-30062
+    port: 30062
+    protocol: TCP
+    targetPort: 30062
+  clusterIP: 10.100.30.62
+  selector:
+    app: mongo-mongos-30062
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-mongos-30063
+  namespace: ds-db
+  labels:
+    name: mongo-mongos-30063
+spec:
+  ports:
+  - name: mongo-mongos-30063
+    port: 30063
+    protocol: TCP
+    targetPort: 30063
+  clusterIP: 10.100.30.63
+  selector:
+    app: mongo-mongos-30063
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-mongos-30061
+  namespace: ds-db
+  labels:
+    app: mongo-mongos-30061
+spec:
+  replicas: 1
+  selector:
+    app: mongo-mongos-30061
+  template:
+    metadata:
+      name: mongo-mongos-30061
+      labels:
+        app: mongo-mongos-30061
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        mongos: "30061"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-mongos-30061
+        command:
+        - mongos
+        - --port
+        - "30061"
+        - --configdb
+        - 10.100.30.51:30051,10.100.30.52:30052,10.100.30.53:30053
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - name: mongo-30061
+          containerPort: 30061
+          protocol: TCP
+          hostPort: 30061
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/mongos
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-mongos-30062
+  namespace: ds-db
+  labels:
+    app: mongo-mongos-30062
+spec:
+  replicas: 1
+  selector:
+    app: mongo-mongos-30062
+  template:
+    metadata:
+      name: mongo-mongos-30062
+      labels:
+        app: mongo-mongos-30062
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        mongos: "30062"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-mongos-30062
+        command:
+        - mongos
+        - --port
+        - "30062"
+        - --configdb
+        - 10.100.30.51:30051,10.100.30.52:30052,10.100.30.53:30053
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - name: mongo-30062
+          containerPort: 30062
+          protocol: TCP
+          hostPort: 30062
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/mongos
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mongo-mongos-30063
+  namespace: ds-db
+  labels:
+    app: mongo-mongos-30063
+spec:
+  replicas: 1
+  selector:
+    app: mongo-mongos-30063
+  template:
+    metadata:
+      name: mongo-mongos-30063
+      labels:
+        app: mongo-mongos-30063
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        mongo: "true"
+        mongos: "30063"
+      containers:
+      - image: r.fds.so:5000/mongo:3.2.8
+        name: mongo-mongos-30063
+        command:
+        - mongos
+        - --port
+        - "30063"
+        - --configdb
+        - 10.100.30.51:30051,10.100.30.52:30052,10.100.30.53:30053
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - name: mongo-30063
+          containerPort: 30063
+          protocol: TCP
+          hostPort: 30063
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/mongo
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /mnt/data/mongo/mongos

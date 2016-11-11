@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-backup
+  name: deepstats-backup
+  namespace: ds-production
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-backup
+  template:
+    metadata:
+      labels:
+        name: deepstats-backup
+    spec:
+      nodeSelector:
+        env: ds-production
+        zone: deepshare
+      containers:
+      - image: r.fds.so:5000/deepstats-backup:201607260819
+        name: deepstats-backup
+        command: ["/go/bin/deepstatsd-backup"]
+        args:
+        - -backupsel
+        - mongo-raw
+        - -mongo-addr
+        - 10.100.30.70:27017
+        - -nsqsel
+        - nsqlookupd
+        - -nsqd-tcp-addr
+        - 10.100.89.71:4160
+        - -nsqlookupd-http-addr
+        - 10.100.104.70:4161
+        - -topics
+        - counter,match,sharelink,dsaction,genurl,inappdata,retention
+        - -channel
+        - deepstats_backup
+        - -mongodb
+        - deepstats_day_backup
+        - -mongocoll
+        - backup
+        resources:
+          requests:
+            memory: "3072Mi"
+            cpu: "2000m"
+          limits:
+            memory: "3072Mi"
+            cpu: "2000m"
+        ports:
+        - containerPort: 16759
+          name: backup
+          protocol: TCP

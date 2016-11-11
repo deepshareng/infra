@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: mattermost
+  name: mattermost
+  namespace: kube-sys
+spec:
+  replicas: 1
+  selector:
+    name: mattermost
+  template:
+    metadata:
+      labels:
+        name: mattermost
+    spec:
+      nodeSelector:
+        env: kube-sys
+      containers:
+      - image: r.fds.so:5000/mattermost-platform:2.2
+        name: mattermost
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: content
+        - mountPath: /mattermost/data
+          name: data
+        - mountPath: /config_docker.json
+          name: config
+      volumes:
+      - name: content
+        hostPath:
+          path: /opt/data/sys/mm/mysql
+      - name: data
+        hostPath:
+          path: /opt/data/sys/mm/data
+      - name: config
+        hostPath:
+          path: /opt/data/sys/mm/config/config_docker.json

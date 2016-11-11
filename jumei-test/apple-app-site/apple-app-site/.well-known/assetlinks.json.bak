@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.xianguo.tingguo",
+    "sha256_cert_fingerprints":
+    ["A3:53:E0:44:09:EA:A5:E1:C8:D8:31:98:B4:73:D0:E8:55:52:6B:73:6A:F9:1A:9C:A7:9F:71:AA:77:FA:E2:5A"]
+  }
+}]

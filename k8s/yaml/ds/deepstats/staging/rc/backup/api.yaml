@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: deepstats-api
+  name: deepstats-api
+  namespace: ds-staging
+spec:
+  replicas: 1
+  selector:
+    name: deepstats-api
+  template:
+    metadata:
+      labels:
+        name: deepstats-api
+    spec:
+      nodeSelector:
+        env: ds-staging
+        deepstats: "true"
+      containers:
+      - image: r.fds.so:5000/deepstats-api-staging:201607080841
+        name: deepstats-api
+        command: ["/go/bin/deepstats-api"]
+        args: ["-mongo-addr","10.100.30.61:30061,10.100.30.62:30062,10.100.30.63:30063","-http-listen","0.0.0.0:16759","-mongocoll-appchannel","appchannel","-mongocoll-appevent","appevent","-mongocoll-day-aggregate","day","-mongocoll-hour-aggregate","hour","-mongocoll-total-aggregate","total","-redis-cluster-node-url","10.100.10.79:6379","-redis-pool-size","100"]
+        ports:
+        - containerPort: 16759
+          name: api
+          protocol: TCP
